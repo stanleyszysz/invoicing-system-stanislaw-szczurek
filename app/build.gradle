@@ -1,0 +1,39 @@
+
+plugins {
+    id 'java'
+    id 'groovy'
+    id 'application'
+    id 'checkstyle'
+}
+
+ext {
+    groovyVersion = "3.0.9"
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation "org.codehaus.groovy:groovy:${groovyVersion}"
+
+    testImplementation 'org.spockframework:spock-core:2.0-groovy-3.0'
+    testImplementation 'junit:junit:4.13.2'
+
+    implementation 'com.google.guava:guava:30.1.1-jre'
+}
+
+application {
+    mainClass = 'pl.futurecollars.invoicing.App'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
+
+checkstyle {
+    showViolations = true
+    ignoreFailures = false
+    maxWarnings = 0
+    maxErrors = 0
+}
