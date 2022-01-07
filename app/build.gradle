@@ -1,13 +1,16 @@
+buildscript {
+    ext {
+        groovyVersion = "3.0.9"
+        lombokVersion = "1.18.22"
+    }
+}
 
 plugins {
     id 'java'
     id 'groovy'
     id 'application'
     id 'checkstyle'
-}
-
-ext {
-    groovyVersion = "3.0.9"
+    id 'jacoco'
 }
 
 repositories {
@@ -21,6 +24,12 @@ dependencies {
     testImplementation 'junit:junit:4.13.2'
 
     implementation 'com.google.guava:guava:30.1.1-jre'
+
+    compileOnly "org.projectlombok:lombok:${lombokVersion}"
+    annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+
+    testCompileOnly "org.projectlombok:lombok:${lombokVersion}"
+    testAnnotationProcessor "org.projectlombok:lombok:${lombokVersion}"
 }
 
 application {
@@ -36,4 +45,28 @@ checkstyle {
     ignoreFailures = false
     maxWarnings = 0
     maxErrors = 0
+}
+
+test {
+    finalizedBy jacocoTestReport
+    finalizedBy jacocoTestCoverageVerification
+}
+
+jacocoTestReport {
+    dependsOn test
+    reports {
+        xml.required = false
+        csv.required = false
+        html.outputLocation = layout.buildDirectory.dir('jacocoHtml')
+    }
+}
+
+jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            limit {
+                minimum = 0.7
+            }
+        }
+    }
 }
