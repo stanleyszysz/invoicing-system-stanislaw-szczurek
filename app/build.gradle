@@ -2,6 +2,7 @@ buildscript {
     ext {
         groovyVersion = "3.0.9"
         lombokVersion = "1.18.22"
+        jaksonVersion = "2.13.1"
     }
 }
 
@@ -30,6 +31,9 @@ dependencies {
 
     testCompileOnly "org.projectlombok:lombok:${lombokVersion}"
     testAnnotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+
+    implementation "com.fasterxml.jackson.core:jackson-databind:${jaksonVersion}"
+    implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:${jaksonVersion}"
 }
 
 application {

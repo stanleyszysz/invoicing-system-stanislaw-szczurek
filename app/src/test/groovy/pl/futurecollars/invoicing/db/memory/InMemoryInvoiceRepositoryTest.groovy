@@ -1,16 +1,14 @@
-package pl.futurecollars.invoicing.services
+package pl.futurecollars.invoicing.db.memory
 
-import pl.futurecollars.invoicing.db.memory.InMemoryInvoiceRepository
 import pl.futurecollars.invoicing.model.Address
 import pl.futurecollars.invoicing.model.Company
 import pl.futurecollars.invoicing.model.Invoice
 import pl.futurecollars.invoicing.model.InvoiceEntry
 import pl.futurecollars.invoicing.model.Vat
 import spock.lang.Specification
-
 import java.time.LocalDate
 
-class InvoiceServiceTest extends Specification {
+class InMemoryInvoiceRepositoryTest extends Specification {
     def buyer1 = new Company("5252287009", "Torte", new Address("Solec", "05-532", "Słonecznikowa", "8"))
     def buyer2 = new Company("5060111906", "Arcon", new Address("Wisła", "08-540", "Kościuszki", "26"))
     def seller1 = new Company("5891937075", "New Eko", new Address("Żukowo", "83-330", "Witosławy", "20"))
@@ -28,20 +26,19 @@ class InvoiceServiceTest extends Specification {
     def invoice2 = new Invoice(UUID.randomUUID(), dateAt2, seller2, buyer2, entries2)
     def invoice3 = new Invoice(UUID.randomUUID(), dateAt2, seller1, buyer2, entries3)
     def repository = new InMemoryInvoiceRepository()
-    def invoiceService = new InvoiceService(repository)
 
     def "should save invoices to repository"() {
         when:
-        def saveInvoice = invoiceService.save(invoice1)
+        def saveInvoice = repository.save(invoice1)
 
         then:
-        repository.getById(saveInvoice.getId()).get().getBuyer().getName() == "Torte"
+        repository.getById(saveInvoice.getId()) != null
     }
 
     def "should get invoice by id"() {
         when:
-        def saveInvoice1 = invoiceService.save(invoice1)
-        def saveInvoice2 = invoiceService.save(invoice2)
+        def saveInvoice1 = repository.save(invoice1)
+        def saveInvoice2 = repository.save(invoice2)
 
         then:
         repository.getById(saveInvoice1.getId()).isPresent()
@@ -50,20 +47,20 @@ class InvoiceServiceTest extends Specification {
 
     def "should get number of invoices in repository"() {
         given:
-        invoiceService.save(invoice1)
-        invoiceService.save(invoice2)
-        invoiceService.save(invoice3)
+        repository.save(invoice1)
+        repository.save(invoice2)
+        repository.save(invoice3)
 
         expect:
-        invoiceService.getAll().size() == 3
+        repository.getAll().size() == 3
     }
 
     def "should can update invoice"() {
         given:
-        invoiceService.save(invoice1)
+        repository.save(invoice1)
 
         when:
-        def updateInvoice = invoiceService.update(invoice1.getId(), invoice2)
+        def updateInvoice = repository.update(invoice1.getId(), invoice2)
 
         then:
         updateInvoice.getSeller().getName() == "Egor"
@@ -71,14 +68,14 @@ class InvoiceServiceTest extends Specification {
 
     def "should can delete invoice"() {
         given:
-        invoiceService.save(invoice1)
-        invoiceService.save(invoice2)
-        invoiceService.save(invoice3)
+        repository.save(invoice1)
+        repository.save(invoice2)
+        repository.save(invoice3)
 
         when:
-        invoiceService.delete(invoice3.getId())
+        repository.delete(invoice3.getId())
 
         then:
-        invoiceService.getAll().size() == 2
+        repository.getAll().size() == 2
     }
 }

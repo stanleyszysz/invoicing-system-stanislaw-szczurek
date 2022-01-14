@@ -1,4 +1,4 @@
-package pl.futurecollars.invoicing.db.memory
+package pl.futurecollars.invoicing.db.file
 
 import pl.futurecollars.invoicing.model.Address
 import pl.futurecollars.invoicing.model.Company
@@ -8,7 +8,8 @@ import pl.futurecollars.invoicing.model.Vat
 import spock.lang.Specification
 import java.time.LocalDate
 
-class InMemoryRepositoryTest extends Specification {
+class FileBasedInvoiceRepositoryTest extends Specification {
+
     def buyer1 = new Company("5252287009", "Torte", new Address("Solec", "05-532", "Słonecznikowa", "8"))
     def buyer2 = new Company("5060111906", "Arcon", new Address("Wisła", "08-540", "Kościuszki", "26"))
     def seller1 = new Company("5891937075", "New Eko", new Address("Żukowo", "83-330", "Witosławy", "20"))
@@ -25,57 +26,61 @@ class InMemoryRepositoryTest extends Specification {
     def invoice1 = new Invoice(UUID.randomUUID(), dateAt1, seller1, buyer1, entries1)
     def invoice2 = new Invoice(UUID.randomUUID(), dateAt2, seller2, buyer2, entries2)
     def invoice3 = new Invoice(UUID.randomUUID(), dateAt2, seller1, buyer2, entries3)
-    def repository = new InMemoryRepository()
+    def fileRepository = new FileBasedInvoiceRepository()
 
-    def "should save invoices to repository"() {
+
+    def "should save invoices to file"() {
         when:
-        def saveInvoice = repository.save(invoice1)
+        def saveInvoice = fileRepository.save(invoice1)
 
         then:
-        repository.getById(saveInvoice.getId()) != null
+        fileRepository.getById(saveInvoice.getId()).isPresent()
+        fileRepository.getById(saveInvoice.getId()).get().getBuyer().getName() == "Torte"
     }
 
     def "should get invoice by id"() {
         when:
-        def saveInvoice1 = repository.save(invoice1)
-        def saveInvoice2 = repository.save(invoice2)
+        def saveInvoice1 = fileRepository.save(invoice1)
+        def saveInvoice2 = fileRepository.save(invoice2)
 
         then:
-        repository.getById(saveInvoice1.getId()).isPresent()
-        repository.getById(saveInvoice2.getId()).get().getSeller().getName() == "Egor"
+        fileRepository.getById(saveInvoice1.getId()).isPresent()
+        fileRepository.getById(saveInvoice2.getId()).get().getBuyer().getName() == "Arcon"
     }
 
-    def "should get number of invoices in repository"() {
+    def "should get number of entries in database file"() {
         given:
-        repository.save(invoice1)
-        repository.save(invoice2)
-        repository.save(invoice3)
+        def numberOfLine = fileRepository.getAll().size()
+        fileRepository.save(invoice1)
+        fileRepository.save(invoice2)
+        fileRepository.save(invoice3)
 
         expect:
-        repository.getAll().size() == 3
+        fileRepository.getAll().size() == numberOfLine + 3
     }
 
     def "should can update invoice"() {
         given:
-        repository.save(invoice1)
+        fileRepository.save(invoice1)
 
         when:
-        def updateInvoice = repository.update(invoice1.getId(), invoice2)
+        def updateInvoice = fileRepository.update(invoice1.getId(), invoice2)
 
         then:
         updateInvoice.getSeller().getName() == "Egor"
     }
 
-    def "should can delete invoice"() {
+    def "should get number of entries in database file after deleting the invoice"() {
         given:
-        repository.save(invoice1)
-        repository.save(invoice2)
-        repository.save(invoice3)
+        def numberOfLine = fileRepository.getAll().size()
+        fileRepository.save(invoice1)
+        fileRepository.save(invoice2)
+        fileRepository.save(invoice3)
 
         when:
-        repository.delete(invoice3.getId())
+        fileRepository.delete(invoice2.getId())
 
         then:
-        repository.getAll().size() == 2
+        fileRepository.getAll().size() == numberOfLine + 2
     }
 }
