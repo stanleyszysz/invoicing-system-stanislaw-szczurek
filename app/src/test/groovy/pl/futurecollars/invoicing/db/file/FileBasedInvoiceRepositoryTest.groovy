@@ -5,7 +5,10 @@ import pl.futurecollars.invoicing.model.Company
 import pl.futurecollars.invoicing.model.Invoice
 import pl.futurecollars.invoicing.model.InvoiceEntry
 import pl.futurecollars.invoicing.model.Vat
+import pl.futurecollars.invoicing.services.FileService
+import pl.futurecollars.invoicing.services.JsonService
 import spock.lang.Specification
+
 import java.time.LocalDate
 
 class FileBasedInvoiceRepositoryTest extends Specification {
@@ -26,7 +29,11 @@ class FileBasedInvoiceRepositoryTest extends Specification {
     def invoice1 = new Invoice(UUID.randomUUID(), dateAt1, seller1, buyer1, entries1)
     def invoice2 = new Invoice(UUID.randomUUID(), dateAt2, seller2, buyer2, entries2)
     def invoice3 = new Invoice(UUID.randomUUID(), dateAt2, seller1, buyer2, entries3)
-    def fileRepository = new FileBasedInvoiceRepository()
+    def fileDb = File.createTempFile('invoices', '.txt').toPath()
+    def fileService = new FileService(fileDb)
+    def jsonService = new JsonService<Invoice>()
+    def fileRepository = new FileBasedInvoiceRepository(fileService, jsonService)
+
 
 
     def "should save invoices to file"() {

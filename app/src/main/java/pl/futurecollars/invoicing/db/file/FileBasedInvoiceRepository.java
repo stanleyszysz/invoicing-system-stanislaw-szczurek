@@ -15,8 +15,13 @@ import pl.futurecollars.invoicing.services.JsonService;
 
 public class FileBasedInvoiceRepository implements InvoiceRepository {
 
-    private final FileService fileService = new FileService();
-    private final JsonService<Invoice> jsonService = new JsonService<>();
+    private final FileService fileService;
+    private final JsonService<Invoice> jsonService;
+
+    public FileBasedInvoiceRepository(FileService fileService, JsonService<Invoice> jsonService) {
+        this.fileService = fileService;
+        this.jsonService = jsonService;
+    }
 
     @Override
     public Invoice save(Invoice invoice) {
