@@ -10,11 +10,11 @@ public interface InvoiceRepository {
 
     Invoice save(Invoice invoice);
 
-    Optional<Invoice> getById(UUID id) throws IOException;
+    Optional<Invoice> getById(UUID id);
 
     List<Invoice> getAll();
 
-    Invoice update(UUID id, Invoice updatedInvoice) throws IOException;
+    Invoice update(UUID id, Invoice updatedInvoice);
 
     void delete(UUID id) throws IOException;
 }

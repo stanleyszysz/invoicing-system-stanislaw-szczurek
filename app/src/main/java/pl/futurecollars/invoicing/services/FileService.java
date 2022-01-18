@@ -5,6 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.stream.Stream;
+import pl.futurecollars.invoicing.exceptions.FileSystemException;
 
 public class FileService {
 
@@ -14,17 +15,29 @@ public class FileService {
         this.invoicesDbPath = invoicesDbPath;
     }
 
-    public void writeToFile(final String line) throws IOException {
-        Files.writeString(invoicesDbPath, line + System.lineSeparator(), StandardOpenOption.APPEND);
-    }
-
-    public void overwriteTheFile(final String line, StandardOpenOption openOption) throws IOException {
-        if (!line.isEmpty()) {
-            Files.writeString(invoicesDbPath, line + System.lineSeparator(), openOption);
+    public void writeToFile(final String line) {
+        try {
+            Files.writeString(invoicesDbPath, line + System.lineSeparator(), StandardOpenOption.APPEND);
+        } catch (IOException e) {
+            throw new FileSystemException("File system processing error.");
         }
     }
 
-    public Stream<String> readFile() throws IOException {
-        return Files.lines(invoicesDbPath);
+    public void overwriteTheFile(final String line, StandardOpenOption openOption) {
+        if (!line.isEmpty()) {
+            try {
+                Files.writeString(invoicesDbPath, line + System.lineSeparator(), openOption);
+            } catch (IOException e) {
+                throw new FileSystemException("File system processing error.");
+            }
+        }
+    }
+
+    public Stream<String> readFile() {
+        try {
+            return Files.lines(invoicesDbPath);
+        } catch (IOException e) {
+            throw new FileSystemException("File system processing error.");
+        }
     }
 }
