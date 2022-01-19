@@ -1,16 +1,18 @@
-package pl.futurecollars.invoicing.services
+package pl.futurecollars.invoicing.db.file
 
-import pl.futurecollars.invoicing.db.memory.InMemoryInvoiceRepository
 import pl.futurecollars.invoicing.model.Address
 import pl.futurecollars.invoicing.model.Company
 import pl.futurecollars.invoicing.model.Invoice
 import pl.futurecollars.invoicing.model.InvoiceEntry
 import pl.futurecollars.invoicing.model.Vat
+import pl.futurecollars.invoicing.services.FileService
+import pl.futurecollars.invoicing.services.JsonService
 import spock.lang.Specification
 
 import java.time.LocalDate
 
-class InvoiceServiceTest extends Specification {
+class FileBasedInvoiceRepositoryTest extends Specification {
+
     def buyer1 = new Company("5252287009", "Torte", new Address("Solec", "05-532", "Słonecznikowa", "8"))
     def buyer2 = new Company("5060111906", "Arcon", new Address("Wisła", "08-540", "Kościuszki", "26"))
     def seller1 = new Company("5891937075", "New Eko", new Address("Żukowo", "83-330", "Witosławy", "20"))
@@ -27,58 +29,65 @@ class InvoiceServiceTest extends Specification {
     def invoice1 = new Invoice(UUID.randomUUID(), dateAt1, seller1, buyer1, entries1)
     def invoice2 = new Invoice(UUID.randomUUID(), dateAt2, seller2, buyer2, entries2)
     def invoice3 = new Invoice(UUID.randomUUID(), dateAt2, seller1, buyer2, entries3)
-    def repository = new InMemoryInvoiceRepository()
-    def invoiceService = new InvoiceService(repository)
+    def fileDb = File.createTempFile('invoices', '.txt').toPath()
+    def fileService = new FileService(fileDb)
+    def jsonService = new JsonService<Invoice>()
+    def fileRepository = new FileBasedInvoiceRepository(fileService, jsonService)
 
-    def "should save invoices to repository"() {
+
+
+    def "should save invoices to file"() {
         when:
-        def saveInvoice = invoiceService.save(invoice1)
+        def saveInvoice = fileRepository.save(invoice1)
 
         then:
-        repository.getById(saveInvoice.getId()).get().getBuyer().getName() == "Torte"
+        fileRepository.getById(saveInvoice.getId()).isPresent()
+        fileRepository.getById(saveInvoice.getId()).get().getBuyer().getName() == "Torte"
     }
 
     def "should get invoice by id"() {
         when:
-        def saveInvoice1 = invoiceService.save(invoice1)
-        def saveInvoice2 = invoiceService.save(invoice2)
+        def saveInvoice1 = fileRepository.save(invoice1)
+        def saveInvoice2 = fileRepository.save(invoice2)
 
         then:
-        repository.getById(saveInvoice1.getId()).isPresent()
-        repository.getById(saveInvoice2.getId()).get().getSeller().getName() == "Egor"
+        fileRepository.getById(saveInvoice1.getId()).isPresent()
+        fileRepository.getById(saveInvoice2.getId()).get().getBuyer().getName() == "Arcon"
     }
 
-    def "should get number of invoices in repository"() {
+    def "should get number of entries in database file"() {
         given:
-        invoiceService.save(invoice1)
-        invoiceService.save(invoice2)
-        invoiceService.save(invoice3)
+        def numberOfLine = fileRepository.getAll().size()
+        fileRepository.save(invoice1)
+        fileRepository.save(invoice2)
+        fileRepository.save(invoice3)
 
         expect:
-        invoiceService.getAll().size() == 3
+        fileRepository.getAll().size() == numberOfLine + 3
     }
 
     def "should can update invoice"() {
         given:
-        invoiceService.save(invoice1)
+        fileRepository.save(invoice1)
 
         when:
-        def updateInvoice = invoiceService.update(invoice1.getId(), invoice2)
+        def updateInvoice = fileRepository.update(invoice1.getId(), invoice2)
 
         then:
         updateInvoice.getSeller().getName() == "Egor"
     }
 
-    def "should can delete invoice"() {
+    def "should get number of entries in database file after deleting the invoice"() {
         given:
-        invoiceService.save(invoice1)
-        invoiceService.save(invoice2)
-        invoiceService.save(invoice3)
+        def numberOfLine = fileRepository.getAll().size()
+        fileRepository.save(invoice1)
+        fileRepository.save(invoice2)
+        fileRepository.save(invoice3)
 
         when:
-        invoiceService.delete(invoice3.getId())
+        fileRepository.delete(invoice2.getId())
 
         then:
-        invoiceService.getAll().size() == 2
+        fileRepository.getAll().size() == numberOfLine + 2
     }
 }

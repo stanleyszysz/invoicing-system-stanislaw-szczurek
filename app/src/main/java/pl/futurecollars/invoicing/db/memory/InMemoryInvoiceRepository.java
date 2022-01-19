@@ -6,10 +6,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-import pl.futurecollars.invoicing.db.Repository;
+import pl.futurecollars.invoicing.db.InvoiceRepository;
 import pl.futurecollars.invoicing.model.Invoice;
 
-public class InMemoryRepository implements Repository {
+public class InMemoryInvoiceRepository implements InvoiceRepository {
 
     private Map<UUID, Invoice> invoices = new HashMap<>();
 

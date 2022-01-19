@@ -8,7 +8,7 @@ import pl.futurecollars.invoicing.model.Vat
 import spock.lang.Specification
 import java.time.LocalDate
 
-class InMemoryRepositoryTest extends Specification {
+class InMemoryInvoiceRepositoryTest extends Specification {
     def buyer1 = new Company("5252287009", "Torte", new Address("Solec", "05-532", "Słonecznikowa", "8"))
     def buyer2 = new Company("5060111906", "Arcon", new Address("Wisła", "08-540", "Kościuszki", "26"))
     def seller1 = new Company("5891937075", "New Eko", new Address("Żukowo", "83-330", "Witosławy", "20"))
@@ -25,7 +25,7 @@ class InMemoryRepositoryTest extends Specification {
     def invoice1 = new Invoice(UUID.randomUUID(), dateAt1, seller1, buyer1, entries1)
     def invoice2 = new Invoice(UUID.randomUUID(), dateAt2, seller2, buyer2, entries2)
     def invoice3 = new Invoice(UUID.randomUUID(), dateAt2, seller1, buyer2, entries3)
-    def repository = new InMemoryRepository()
+    def repository = new InMemoryInvoiceRepository()
 
     def "should save invoices to repository"() {
         when:
