@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-import org.springframework.stereotype.Repository;
 import pl.futurecollars.invoicing.db.InvoiceRepository;
 import pl.futurecollars.invoicing.model.Invoice;
 
@@ -41,6 +40,7 @@ public class InMemoryInvoiceRepository implements InvoiceRepository {
     @Override
     public Invoice update(UUID id, Invoice updatedInvoice) {
         if (invoices.get(id) != null) {
+            updatedInvoice.setId(id);
             invoices.replace(id, updatedInvoice);
             return updatedInvoice;
         } else {

@@ -1,6 +1,5 @@
 package pl.futurecollars.invoicing.services;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -21,7 +20,7 @@ public class InvoiceService {
         return invoiceRepository.save(invoice);
     }
 
-    public Optional<Invoice> getById(UUID id) throws IOException {
+    public Optional<Invoice> getById(UUID id) {
         return invoiceRepository.getById(id);
     }
 
@@ -29,11 +28,11 @@ public class InvoiceService {
         return invoiceRepository.getAll();
     }
 
-    public Invoice update(UUID id, Invoice updatedInvoice) throws IOException {
+    public Invoice update(UUID id, Invoice updatedInvoice) {
         return invoiceRepository.update(id, updatedInvoice);
     }
 
-    public void delete(UUID id) throws IOException {
+    public void delete(UUID id) {
         invoiceRepository.delete(id);
     }
 }

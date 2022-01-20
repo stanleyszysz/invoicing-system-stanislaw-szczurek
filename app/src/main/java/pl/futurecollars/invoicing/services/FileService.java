@@ -5,10 +5,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.stream.Stream;
-import org.springframework.stereotype.Service;
 import pl.futurecollars.invoicing.exceptions.FileSystemException;
 
-@Service
 public class FileService {
 
     private final Path invoicesDbPath;

@@ -1,10 +1,8 @@
 package pl.futurecollars.invoicing.db;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 import pl.futurecollars.invoicing.model.Invoice;
 
@@ -19,5 +17,5 @@ public interface InvoiceRepository {
 
     Invoice update(UUID id, Invoice updatedInvoice);
 
-    void delete(UUID id) throws IOException;
+    void delete(UUID id);
 }
