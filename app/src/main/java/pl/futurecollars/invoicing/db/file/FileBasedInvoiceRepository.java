@@ -5,12 +5,14 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import org.springframework.stereotype.Repository;
 import pl.futurecollars.invoicing.db.InvoiceRepository;
 import pl.futurecollars.invoicing.exceptions.DbException;
 import pl.futurecollars.invoicing.model.Invoice;
 import pl.futurecollars.invoicing.services.FileService;
 import pl.futurecollars.invoicing.services.JsonService;
 
+@Repository
 public class FileBasedInvoiceRepository implements InvoiceRepository {
 
     private final FileService fileService;

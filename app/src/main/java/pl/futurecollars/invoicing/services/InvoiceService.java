@@ -4,9 +4,11 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import org.springframework.stereotype.Service;
 import pl.futurecollars.invoicing.db.InvoiceRepository;
 import pl.futurecollars.invoicing.model.Invoice;
 
+@Service
 public class InvoiceService {
 
     private final InvoiceRepository invoiceRepository;
