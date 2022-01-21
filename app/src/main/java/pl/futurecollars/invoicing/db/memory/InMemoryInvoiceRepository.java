@@ -40,6 +40,7 @@ public class InMemoryInvoiceRepository implements InvoiceRepository {
     @Override
     public Invoice update(UUID id, Invoice updatedInvoice) {
         if (invoices.get(id) != null) {
+            updatedInvoice.setId(id);
             invoices.replace(id, updatedInvoice);
             return updatedInvoice;
         } else {
