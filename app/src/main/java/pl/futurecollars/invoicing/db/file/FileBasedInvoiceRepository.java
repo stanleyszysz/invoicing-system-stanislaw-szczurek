@@ -23,9 +23,10 @@ public class FileBasedInvoiceRepository implements InvoiceRepository {
 
     @Override
     public Invoice save(Invoice invoice) {
-        UUID id = UUID.randomUUID();
+//        UUID id = UUID.randomUUID();
+        UUID id = invoice.getId();
         if (this.getById(id).isEmpty()) {
-            invoice.setId(id);
+//            invoice.setId(id);
             String json = jsonService.toJson(invoice);
             fileService.writeToFile(json);
             return invoice;

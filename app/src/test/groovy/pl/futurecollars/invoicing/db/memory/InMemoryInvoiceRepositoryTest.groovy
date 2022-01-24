@@ -66,6 +66,17 @@ class InMemoryInvoiceRepositoryTest extends Specification {
         updateInvoice.getSeller().getName() == "Egor"
     }
 
+    def "should return exception when can't update invoice"() {
+        given:
+        repository.save(invoice1)
+
+        when:
+        def updateInvoice = repository.update(UUID.fromString("9ced63bd-d4f7-4bcf-8e15-2ce6163e9f62"), invoice2)
+
+        then:
+        thrown IllegalArgumentException
+    }
+
     def "should can delete invoice"() {
         given:
         repository.save(invoice1)
@@ -77,5 +88,13 @@ class InMemoryInvoiceRepositoryTest extends Specification {
 
         then:
         repository.getAll().size() == 2
+    }
+
+    def "should return exception when id doesn't exist"() {
+        when:
+        repository.delete(UUID.fromString("9ced63bd-d4f7-4bcf-8e15-2ce6163e9f62"))
+
+        then:
+        thrown IllegalArgumentException
     }
 }
