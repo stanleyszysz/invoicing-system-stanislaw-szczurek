@@ -1,5 +1,6 @@
 package pl.futurecollars.invoicing.db.memory
 
+import pl.futurecollars.invoicing.exceptions.DbException
 import pl.futurecollars.invoicing.model.Address
 import pl.futurecollars.invoicing.model.Company
 import pl.futurecollars.invoicing.model.Invoice
@@ -22,27 +23,39 @@ class InMemoryInvoiceRepositoryTest extends Specification {
     def entries1 = Arrays.asList(entry1, entry2)
     def entries2 = Arrays.asList(entry3, entry4)
     def entries3 = Arrays.asList(entry1, entry2, entry3)
-    def invoice1 = new Invoice(UUID.randomUUID(), dateAt1, seller1, buyer1, entries1)
-    def invoice2 = new Invoice(UUID.randomUUID(), dateAt2, seller2, buyer2, entries2)
-    def invoice3 = new Invoice(UUID.randomUUID(), dateAt2, seller1, buyer2, entries3)
+    def id1 = UUID.randomUUID()
+    def id2 = UUID.randomUUID()
+    def id3 = UUID.randomUUID()
+    def invoice1 = new Invoice(id1, dateAt1, seller1, buyer1, entries1)
+    def invoice2 = new Invoice(id2, dateAt2, seller2, buyer2, entries2)
+    def invoice3 = new Invoice(id3, dateAt2, seller1, buyer2, entries3)
     def repository = new InMemoryInvoiceRepository()
 
     def "should save invoices to repository"() {
         when:
-        def saveInvoice = repository.save(invoice1)
+        repository.save(invoice1)
 
         then:
-        repository.getById(saveInvoice.getId()) != null
+        repository.getById(invoice1.getId()) != null
+    }
+
+    def "should return exception when try save invoice with existing id"() {
+        when:
+        repository.save(invoice1)
+        repository.save(invoice1)
+
+        then:
+        thrown DbException
     }
 
     def "should get invoice by id"() {
         when:
-        def saveInvoice1 = repository.save(invoice1)
-        def saveInvoice2 = repository.save(invoice2)
+        repository.save(invoice1)
+        repository.save(invoice2)
 
         then:
-        repository.getById(saveInvoice1.getId()).isPresent()
-        repository.getById(saveInvoice2.getId()).get().getSeller().getName() == "Egor"
+        repository.getById(invoice1.getId()).isPresent()
+        repository.getById(invoice2.getId()).get().getSeller().getName() == "Egor"
     }
 
     def "should get number of invoices in repository"() {

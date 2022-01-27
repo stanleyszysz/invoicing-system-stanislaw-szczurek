@@ -23,10 +23,10 @@ class TestHelpers {
     static entries1 = Arrays.asList(entry1, entry2)
     static entries2 = Arrays.asList(entry3, entry4)
     static entries3 = Arrays.asList(entry1, entry2, entry3)
-    static UUID id1 = UUID.randomUUID()
-
+    static id1 = UUID.randomUUID()
+    static id2 = UUID.randomUUID()
+    static id3 = UUID.randomUUID()
     static invoice1 = new Invoice(id1, dateAt1, seller1, buyer1, entries1)
-    static invoice2 = new Invoice(UUID.randomUUID(), dateAt2, seller2, buyer2, entries2)
-    static invoice3 = new Invoice(UUID.randomUUID(), dateAt2, seller1, buyer2, entries3)
-
+    static invoice2 = new Invoice(id2, dateAt2, seller2, buyer2, entries2)
+    static invoice3 = new Invoice(id3, dateAt2, seller1, buyer2, entries3)
 }

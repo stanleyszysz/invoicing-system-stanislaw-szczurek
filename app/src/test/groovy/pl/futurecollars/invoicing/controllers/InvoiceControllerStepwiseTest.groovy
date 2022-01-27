@@ -11,7 +11,6 @@ import pl.futurecollars.invoicing.helpers.TestHelpers
 import pl.futurecollars.invoicing.model.Company
 import pl.futurecollars.invoicing.model.Invoice
 import pl.futurecollars.invoicing.services.JsonService
-import spock.lang.Shared
 import spock.lang.Specification
 import spock.lang.Stepwise
 
@@ -33,15 +32,7 @@ class InvoiceControllerStepwiseTest extends Specification {
     private JsonService jsonService
 
     private Invoice invoice1 = TestHelpers.invoice1
-    private Invoice invoice2 = TestHelpers.invoice2
-
     private Company seller2 = TestHelpers.seller2
-
-    @Shared
-    private UUID invoiceId
-
-    @Shared
-    private int numberOfEntries
 
     def "empty array is returned when no invoices were saved"() {
         given:
@@ -71,8 +62,10 @@ class InvoiceControllerStepwiseTest extends Specification {
                 .response
                 .contentAsString
 
+        def invoice = jsonService.toObject(result, Invoice)
+
         then:
-        result.contains("New Eko")
+        invoice == invoice1
     }
 
     def "one invoice is returned when getting all invoices"() {
@@ -88,14 +81,11 @@ class InvoiceControllerStepwiseTest extends Specification {
 
         then:
         invoices.size() == 1
-//        invoices[0] == TestHelpers.invoice1
     }
 
     def "invoice is returned correctly when getting by id"() {
-        println "getID " + invoice1.getId()
-
         when:
-        def result = mockMvc.perform(get("/invoices/" + invoice1.getId()))
+        def result = mockMvc.perform(get("/invoices/" + TestHelpers.id1))
                 .andExpect(status().isOk())
                 .andReturn()
                 .response
@@ -110,8 +100,6 @@ class InvoiceControllerStepwiseTest extends Specification {
     def "updated invoice is returned correctly when getting by id"() {
         given:
         invoice1.setSeller(seller2)
-        println(invoice1.getId())
-        println(TestHelpers.id1)
 
         when:
         def result = mockMvc.perform(patch("/invoices/" + TestHelpers.id1)
@@ -123,23 +111,13 @@ class InvoiceControllerStepwiseTest extends Specification {
                 .response
                 .contentAsString
 
-        def invoice = jsonService.toObject(result, Invoice)
-
         then:
-        invoice == invoice1
+        result.contains("Egor")
     }
 
     def "invoice can be deleted"() {
         expect:
-        mockMvc.perform(delete("/invoices/" + invoice1.getId()))
+        mockMvc.perform(delete("/invoices/" + TestHelpers.id1))
                 .andExpect(status().isNoContent())
-
-        and:
-        mockMvc.perform(delete("/invoices/" + invoice1.getId()))
-                .andExpect(status().isNotFound())
-
-        and:
-        mockMvc.perform(get("/invoices/" + invoice1.getId()))
-                .andExpect(status().isNotFound())
     }
 }
