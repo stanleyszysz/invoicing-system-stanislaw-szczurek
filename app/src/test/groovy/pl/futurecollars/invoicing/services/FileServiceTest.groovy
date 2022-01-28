@@ -8,7 +8,7 @@ import java.nio.file.StandardOpenOption
 
 class FileServiceTest extends Specification {
 
-    def invalidPath = Path.of("/home/stanley/invoicing-system-stanislaw-szczurek/app/src/main/resources/invoices-non-existing.txt")
+    def invalidPath = Path.of("invoices-non-existing.txt")
     def fileService = new FileService(invalidPath)
 
     def "WriteToFile"() {

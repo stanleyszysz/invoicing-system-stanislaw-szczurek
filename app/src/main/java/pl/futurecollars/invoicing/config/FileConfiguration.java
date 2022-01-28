@@ -14,7 +14,7 @@ import pl.futurecollars.invoicing.services.JsonService;
 @ConditionalOnProperty(value = "pl.futurecollars.invoicing.db", havingValue = "file")
 public class FileConfiguration {
 
-    public static final Path INVOICES_DB_PATH = Path.of("/home/stanley/invoicing-system-stanislaw-szczurek/app/src/main/resources/invoices-json.txt");
+    public static final Path INVOICES_DB_PATH = Path.of("invoices-json.txt");
 
     @Bean
     public FileService fileService() {
