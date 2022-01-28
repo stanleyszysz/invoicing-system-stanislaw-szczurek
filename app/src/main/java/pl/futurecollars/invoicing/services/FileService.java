@@ -24,12 +24,10 @@ public class FileService {
     }
 
     public void overwriteTheFile(final String line, StandardOpenOption openOption) {
-        if (!line.isEmpty()) {
-            try {
-                Files.writeString(invoicesDbPath, line + System.lineSeparator(), openOption);
-            } catch (IOException e) {
-                throw new FileSystemException("File system processing error.");
-            }
+        try {
+            Files.write(invoicesDbPath, line.getBytes(), openOption);
+        } catch (IOException e) {
+            throw new FileSystemException("File system processing error.");
         }
     }
 

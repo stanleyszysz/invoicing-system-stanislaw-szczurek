@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import pl.futurecollars.invoicing.db.InvoiceRepository;
+import pl.futurecollars.invoicing.exceptions.DbException;
 import pl.futurecollars.invoicing.model.Invoice;
 
 public class InMemoryInvoiceRepository implements InvoiceRepository {
@@ -15,15 +16,12 @@ public class InMemoryInvoiceRepository implements InvoiceRepository {
 
     @Override
     public Invoice save(Invoice invoice) {
-
-        UUID id = UUID.randomUUID();
-
+        UUID id = invoice.getId();
         if (invoices.get(id) == null) {
-            invoice.setId(id);
             invoices.put(id, invoice);
             return invoice;
         } else {
-            return save(invoice);
+            throw new DbException("ID already exist.");
         }
     }
 

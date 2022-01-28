@@ -17,7 +17,7 @@ import pl.futurecollars.invoicing.model.Invoice;
 import pl.futurecollars.invoicing.services.InvoiceService;
 
 @RestController
-@RequestMapping(path = "/invoices")
+@RequestMapping(path = "/invoices", produces = {"application/json;charset=UTF-8"})
 @RequiredArgsConstructor
 public class InvoiceController {
 

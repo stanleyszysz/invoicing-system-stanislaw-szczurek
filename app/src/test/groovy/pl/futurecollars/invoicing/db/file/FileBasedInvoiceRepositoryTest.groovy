@@ -1,5 +1,6 @@
 package pl.futurecollars.invoicing.db.file
 
+import pl.futurecollars.invoicing.exceptions.DbException
 import pl.futurecollars.invoicing.model.Address
 import pl.futurecollars.invoicing.model.Company
 import pl.futurecollars.invoicing.model.Invoice
@@ -26,9 +27,12 @@ class FileBasedInvoiceRepositoryTest extends Specification {
     def entries1 = Arrays.asList(entry1, entry2)
     def entries2 = Arrays.asList(entry3, entry4)
     def entries3 = Arrays.asList(entry1, entry2, entry3)
-    def invoice1 = new Invoice(UUID.randomUUID(), dateAt1, seller1, buyer1, entries1)
-    def invoice2 = new Invoice(UUID.randomUUID(), dateAt2, seller2, buyer2, entries2)
-    def invoice3 = new Invoice(UUID.randomUUID(), dateAt2, seller1, buyer2, entries3)
+    def id1 = UUID.randomUUID()
+    def id2 = UUID.randomUUID()
+    def id3 = UUID.randomUUID()
+    def invoice1 = new Invoice(id1, dateAt1, seller1, buyer1, entries1)
+    def invoice2 = new Invoice(id2, dateAt2, seller2, buyer2, entries2)
+    def invoice3 = new Invoice(id3, dateAt2, seller1, buyer2, entries3)
     def fileDb = File.createTempFile('invoices', '.txt').toPath()
     def fileService = new FileService(fileDb)
     def jsonService = new JsonService<Invoice>()
@@ -38,21 +42,30 @@ class FileBasedInvoiceRepositoryTest extends Specification {
 
     def "should save invoices to file"() {
         when:
-        def saveInvoice = fileRepository.save(invoice1)
+        fileRepository.save(invoice1)
 
         then:
-        fileRepository.getById(saveInvoice.getId()).isPresent()
-        fileRepository.getById(saveInvoice.getId()).get().getBuyer().getName() == "Torte"
+        fileRepository.getById(invoice1.getId()).isPresent()
+        fileRepository.getById(invoice1.getId()).get().getBuyer().getName() == "Torte"
+    }
+
+    def "should return exception when try save invoice with existing id"() {
+        when:
+        fileRepository.save(invoice1)
+        fileRepository.save(invoice1)
+
+        then:
+        thrown DbException
     }
 
     def "should get invoice by id"() {
         when:
-        def saveInvoice1 = fileRepository.save(invoice1)
-        def saveInvoice2 = fileRepository.save(invoice2)
+        fileRepository.save(invoice1)
+        fileRepository.save(invoice2)
 
         then:
-        fileRepository.getById(saveInvoice1.getId()).isPresent()
-        fileRepository.getById(saveInvoice2.getId()).get().getBuyer().getName() == "Arcon"
+        fileRepository.getById(invoice1.getId()).isPresent()
+        fileRepository.getById(invoice2.getId()).get().getBuyer().getName() == "Arcon"
     }
 
     def "should get number of entries in database file"() {
