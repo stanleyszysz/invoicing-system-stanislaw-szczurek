@@ -18,4 +18,7 @@ public class Invoice {
     private Company buyer;
     private List<InvoiceEntry> entries;
 
+    public void generatedId() {
+        this.id = UUID.randomUUID();
+    }
 }

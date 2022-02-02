@@ -13,6 +13,9 @@ import pl.futurecollars.invoicing.services.JsonService;
 
 public class FileBasedInvoiceRepository implements InvoiceRepository {
 
+    //    @Value(value = "${invoicing.system.stanislaw.szczurek.db.file.dir}");
+    //    private Path dbPath;
+
     private final FileService fileService;
     private final JsonService<Invoice> jsonService;
 
@@ -50,6 +53,7 @@ public class FileBasedInvoiceRepository implements InvoiceRepository {
     @Override
     public Invoice update(UUID id, Invoice updatedInvoice) {
         delete(id);
+        updatedInvoice.setId(id);
         return save(updatedInvoice);
     }
 
@@ -57,9 +61,18 @@ public class FileBasedInvoiceRepository implements InvoiceRepository {
     public void delete(UUID id) {
         List<Invoice> invoices = getAll();
 
-        invoices.removeIf(item -> item.getId().equals(id));
+        boolean isRemoved = invoices.removeIf(item -> item.getId().equals(id));
+
+        if (!isRemoved) {
+            throw new IllegalArgumentException("Id" + id + "doesn't exist.");
+        }
 
         fileService.overwriteTheFile(invoices.stream()
             .map(item -> jsonService.toJson(item)).collect(Collectors.joining(System.lineSeparator())), StandardOpenOption.TRUNCATE_EXISTING);
+    }
+
+    @Override
+    public void clear() {
+        fileService.clear();
     }
 }

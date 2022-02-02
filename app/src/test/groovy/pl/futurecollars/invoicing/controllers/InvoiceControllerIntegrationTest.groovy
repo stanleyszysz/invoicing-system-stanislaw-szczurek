@@ -6,14 +6,13 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.MediaType
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
-import pl.futurecollars.invoicing.config.FileConfiguration
+import pl.futurecollars.invoicing.db.InvoiceRepository
 import pl.futurecollars.invoicing.helpers.TestHelpers
 import pl.futurecollars.invoicing.model.Company
 import pl.futurecollars.invoicing.model.Invoice
 import pl.futurecollars.invoicing.services.JsonService
 import spock.lang.Specification
 
-import java.nio.file.Files
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
@@ -29,13 +28,17 @@ class InvoiceControllerIntegrationTest extends Specification {
     @Autowired
     private JsonService jsonService
 
+    @Autowired
+    private InvoiceRepository invoiceRepository
+
     private Invoice invoice1 = TestHelpers.invoice1
     private Invoice invoice2 = TestHelpers.invoice2
     private Invoice invoice3 = TestHelpers.invoice3
     private Company seller2 = TestHelpers.seller2
+    private UUID id
 
     def setup() {
-        Files.writeString((FileConfiguration.INVOICES_DB_PATH), "")
+        invoiceRepository.clear()
     }
 
     private Invoice saveInvoice(invoice) {
@@ -49,6 +52,7 @@ class InvoiceControllerIntegrationTest extends Specification {
                 .contentAsString
 
         invoice = jsonService.toObject(result, Invoice)
+        id = invoice.getId()
 
         return invoice
     }
@@ -73,21 +77,19 @@ class InvoiceControllerIntegrationTest extends Specification {
         getAllInvoices().size() == 3
     }
 
-    def "invoice is returned correctly when getting by id"() {
+    def "seller is returned correctly when getting by id"() {
         given:
         saveInvoice(invoice1)
 
         when:
-        def result = mockMvc.perform(get("/invoices/" + invoice1.getId()))
+        def result = mockMvc.perform(get("/invoices/" + id))
                 .andExpect(status().isOk())
                 .andReturn()
                 .response
                 .contentAsString
 
-        def returnedInvoice = jsonService.toObject(result, Invoice)
-
         then:
-        returnedInvoice == invoice1
+        result.contains("New Eko")
     }
 
     def "GetById returned null when id doesn't exist"() {
@@ -109,13 +111,13 @@ class InvoiceControllerIntegrationTest extends Specification {
         getAllInvoices().size() == 0
     }
 
-    def "invoice is returned correctly when updating by id"() {
+    def "updated seller is returned correctly when updating invoice by id"() {
         given:
         saveInvoice(invoice1)
         invoice1.setSeller(seller2)
 
         when:
-        def result = mockMvc.perform(patch("/invoices/" + invoice1.getId())
+        def result = mockMvc.perform(patch("/invoices/" + id)
                 .content(jsonService.toJson(invoice1))
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
         )
@@ -124,18 +126,15 @@ class InvoiceControllerIntegrationTest extends Specification {
                 .response
                 .contentAsString
 
-        def returnedInvoice = jsonService.toObject(result, Invoice)
-
         then:
         result.contains("Egor")
-        returnedInvoice == invoice1
     }
 
     def "two invoices remain when one of the three is deleted"() {
         given:
-        saveInvoice(invoice1)
-        saveInvoice(invoice2)
-        saveInvoice(invoice3)
+        invoice1 = saveInvoice(invoice1)
+        invoice2 = saveInvoice(invoice2)
+        invoice3 = saveInvoice(invoice3)
 
         when:
         mockMvc.perform(delete("/invoices/" + invoice2.getId()))
@@ -144,7 +143,7 @@ class InvoiceControllerIntegrationTest extends Specification {
         getAllInvoices().size() == 2
     }
 
-    def "NoContent is returned when remove a invoice with a non-existent id"() {
+    def "NoContent returned when remove a invoice with a non-existent id"() {
         expect:
         mockMvc.perform(delete("/invoices/1f8a9cd9-629c-4a2e-aee3-cf7d90b17712"))
                 .andExpect(status().isNoContent())

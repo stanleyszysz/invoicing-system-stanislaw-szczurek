@@ -33,8 +33,8 @@ class FileBasedInvoiceRepositoryTest extends Specification {
     def invoice1 = new Invoice(id1, dateAt1, seller1, buyer1, entries1)
     def invoice2 = new Invoice(id2, dateAt2, seller2, buyer2, entries2)
     def invoice3 = new Invoice(id3, dateAt2, seller1, buyer2, entries3)
-    def fileDb = File.createTempFile('invoices', '.txt').toPath()
-    def fileService = new FileService(fileDb)
+    def fileDb = File.createTempFile('invoices', '.txt')
+    def fileService = new FileService("classpath:invoices.txt")
     def jsonService = new JsonService<Invoice>()
     def fileRepository = new FileBasedInvoiceRepository(fileService, jsonService)
 

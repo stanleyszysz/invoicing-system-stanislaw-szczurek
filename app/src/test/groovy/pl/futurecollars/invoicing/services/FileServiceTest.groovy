@@ -3,12 +3,11 @@ package pl.futurecollars.invoicing.services
 import pl.futurecollars.invoicing.exceptions.FileSystemException
 import spock.lang.Specification
 
-import java.nio.file.Path
 import java.nio.file.StandardOpenOption
 
 class FileServiceTest extends Specification {
 
-    def invalidPath = Path.of("invoices-non-existing.txt")
+    def invalidPath = "invoices-non-existing.txt"
     def fileService = new FileService(invalidPath)
 
     def "WriteToFile"() {

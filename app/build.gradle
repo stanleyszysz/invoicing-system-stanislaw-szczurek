@@ -1,9 +1,11 @@
 buildscript {
     ext {
+        junitVersion = "4.13.2"
         groovyVersion = "3.0.9"
         lombokVersion = "1.18.22"
         jaksonVersion = "2.13.1"
         spockVersion = "2.0-groovy-3.0"
+        guavaVersion = "31.0.1-jre"
     }
 }
 
@@ -17,9 +19,15 @@ plugins {
     id 'jacoco'
 }
 
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+        vendor = JvmVendorSpec.ORACLE
+    }
+}
+
 group = 'pl.futurecollars.invoicing'
 version = '0.0.1'
-sourceCompatibility = '17'
 
 configurations {
     compileOnly {
@@ -33,25 +41,24 @@ repositories {
 
 dependencies {
 
-    implementation 'org.springframework.boot:spring-boot-starter-web'
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
-
-    testImplementation "org.codehaus.groovy:groovy:${groovyVersion}"
-
-    testImplementation "org.spockframework:spock-core:${spockVersion}"
-    testImplementation "org.spockframework:spock-spring:${spockVersion}"
-    testImplementation 'junit:junit:4.13.2'
-
-    implementation 'com.google.guava:guava:30.1.1-jre'
-
-    compileOnly "org.projectlombok:lombok:${lombokVersion}"
     annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
 
-    testCompileOnly "org.projectlombok:lombok:${lombokVersion}"
-    testAnnotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+    compileOnly "org.projectlombok:lombok:${lombokVersion}"
 
+    implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation "com.fasterxml.jackson.core:jackson-databind:${jaksonVersion}"
     implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:${jaksonVersion}"
+    implementation "com.google.guava:guava:${guavaVersion}"
+
+    testAnnotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+
+    testCompileOnly "org.projectlombok:lombok:${lombokVersion}"
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation "org.codehaus.groovy:groovy:${groovyVersion}"
+    testImplementation "org.spockframework:spock-core:${spockVersion}"
+    testImplementation "org.spockframework:spock-spring:${spockVersion}"
+    testImplementation "junit:junit:${junitVersion}"
 }
 
 application {

@@ -3,18 +3,20 @@ package pl.futurecollars.invoicing.controllers
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.context.annotation.PropertySource
 import org.springframework.http.MediaType
 import org.springframework.test.context.ActiveProfiles
+import org.springframework.test.context.TestPropertySource
 import org.springframework.test.web.servlet.MockMvc
-import pl.futurecollars.invoicing.config.FileConfiguration
+import pl.futurecollars.invoicing.db.InvoiceRepository
 import pl.futurecollars.invoicing.helpers.TestHelpers
 import pl.futurecollars.invoicing.model.Company
 import pl.futurecollars.invoicing.model.Invoice
 import pl.futurecollars.invoicing.services.JsonService
+import spock.lang.Shared
 import spock.lang.Specification
 import spock.lang.Stepwise
 
-import java.nio.file.Files
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
@@ -31,12 +33,18 @@ class InvoiceControllerStepwiseTest extends Specification {
     @Autowired
     private JsonService jsonService
 
+    @Autowired
+    private InvoiceRepository invoiceRepository
+
     private Invoice invoice1 = TestHelpers.invoice1
     private Company seller2 = TestHelpers.seller2
 
+    @Shared
+    private UUID id
+
     def "empty array is returned when no invoices were saved"() {
         given:
-        Files.writeString((FileConfiguration.INVOICES_DB_PATH), "")
+        invoiceRepository.clear()
         String expectedBody = "[]"
 
         when:
@@ -63,9 +71,10 @@ class InvoiceControllerStepwiseTest extends Specification {
                 .contentAsString
 
         def invoice = jsonService.toObject(result, Invoice)
+        id = invoice.getId()
 
         then:
-        invoice == invoice1
+        result.contains("New Eko")
     }
 
     def "one invoice is returned when getting all invoices"() {
@@ -83,26 +92,24 @@ class InvoiceControllerStepwiseTest extends Specification {
         invoices.size() == 1
     }
 
-    def "invoice is returned correctly when getting by id"() {
+    def "buyer name is returned correctly when getting by id"() {
         when:
-        def result = mockMvc.perform(get("/invoices/" + TestHelpers.id1))
+        def result = mockMvc.perform(get("/invoices/" + id))
                 .andExpect(status().isOk())
                 .andReturn()
                 .response
                 .contentAsString
 
-        def savedInvoice = jsonService.toObject(result, Invoice)
-
         then:
-        savedInvoice == invoice1
+        result.contains("Torte")
     }
 
-    def "updated invoice is returned correctly when getting by id"() {
+    def "updated seller is returned correctly when updating invoice by id"() {
         given:
         invoice1.setSeller(seller2)
 
         when:
-        def result = mockMvc.perform(patch("/invoices/" + TestHelpers.id1)
+        def result = mockMvc.perform(patch("/invoices/" + id)
                 .content(jsonService.toJson(invoice1))
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
         )
@@ -117,7 +124,7 @@ class InvoiceControllerStepwiseTest extends Specification {
 
     def "invoice can be deleted"() {
         expect:
-        mockMvc.perform(delete("/invoices/" + TestHelpers.id1))
+        mockMvc.perform(delete("/invoices/" + id))
                 .andExpect(status().isNoContent())
     }
 }

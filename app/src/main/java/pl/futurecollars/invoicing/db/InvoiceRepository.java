@@ -18,4 +18,6 @@ public interface InvoiceRepository {
     Invoice update(UUID id, Invoice updatedInvoice);
 
     void delete(UUID id);
+
+    void clear();
 }
