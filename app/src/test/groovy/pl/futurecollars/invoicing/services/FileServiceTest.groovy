@@ -1,21 +1,24 @@
 package pl.futurecollars.invoicing.services
 
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.context.SpringBootTest
 import pl.futurecollars.invoicing.exceptions.FileSystemException
 import spock.lang.Specification
 
 import java.nio.file.StandardOpenOption
 
+@SpringBootTest
 class FileServiceTest extends Specification {
 
-    def invalidPath = "invoices-non-existing.txt"
-    def fileService = new FileService(invalidPath)
+    @Autowired
+    private FileService fileService
 
     def "WriteToFile"() {
         when:
         fileService.writeToFile("Test")
 
         then:
-        thrown FileSystemException
+        noExceptionThrown()
     }
 
     def "OverwriteTheFile"() {
@@ -23,7 +26,7 @@ class FileServiceTest extends Specification {
         fileService.overwriteTheFile("Test", StandardOpenOption.TRUNCATE_EXISTING)
 
         then:
-        thrown FileSystemException
+        noExceptionThrown()
     }
 
     def "ReadFile"() {
@@ -31,6 +34,6 @@ class FileServiceTest extends Specification {
         fileService.readFile()
 
         then:
-        thrown FileSystemException
+        noExceptionThrown()
     }
 }

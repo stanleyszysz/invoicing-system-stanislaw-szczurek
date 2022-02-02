@@ -44,7 +44,6 @@ class InvoiceControllerStepwiseTest extends Specification {
 
     def "empty array is returned when no invoices were saved"() {
         given:
-        invoiceRepository.clear()
         String expectedBody = "[]"
 
         when:
@@ -60,6 +59,9 @@ class InvoiceControllerStepwiseTest extends Specification {
 
 
     def "add single invoice with seller New Eko"() {
+        given:
+        invoiceRepository.clear()
+
         when:
         def result = mockMvc.perform(post("/invoices")
                 .content(jsonService.toJson(invoice1))
@@ -71,10 +73,11 @@ class InvoiceControllerStepwiseTest extends Specification {
                 .contentAsString
 
         def invoice = jsonService.toObject(result, Invoice)
+
         id = invoice.getId()
 
         then:
-        result.contains("New Eko")
+        result.contains(invoice1.getSeller().getName())
     }
 
     def "one invoice is returned when getting all invoices"() {
