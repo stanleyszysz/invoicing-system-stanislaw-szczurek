@@ -5,3 +5,14 @@ pl:
   futurecollars:
     invoicing:
       db: file
+      dir: classpath:invoices-json.txt
+
+logging:
+  level:
+    org:
+      springframework:
+        boot: ERROR
+    pl:
+      futurecollars:
+        invoicing: INFO
+        invoicing.db: DEBUG

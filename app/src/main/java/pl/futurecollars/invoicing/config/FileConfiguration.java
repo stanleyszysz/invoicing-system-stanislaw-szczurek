@@ -1,6 +1,6 @@
 package pl.futurecollars.invoicing.config;
 
-import java.nio.file.Path;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,11 +14,9 @@ import pl.futurecollars.invoicing.services.JsonService;
 @ConditionalOnProperty(value = "pl.futurecollars.invoicing.db", havingValue = "file")
 public class FileConfiguration {
 
-    public static final Path INVOICES_DB_PATH = Path.of("invoices-json.txt");
-
     @Bean
-    public FileService fileService() {
-        return new FileService(INVOICES_DB_PATH);
+    public FileService fileService(@Value("${pl.futurecollars.invoicing.dir}") String dbPath) {
+        return new FileService(dbPath);
     }
 
     @Bean

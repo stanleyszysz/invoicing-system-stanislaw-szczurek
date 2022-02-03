@@ -51,7 +51,12 @@ public class InMemoryInvoiceRepository implements InvoiceRepository {
         if (invoices.get(id) != null) {
             invoices.remove(id);
         } else {
-            throw new IllegalArgumentException("Id" + id + "doesn't exist.");
+            throw new IllegalArgumentException("Id " + id + " doesn't exist.");
         }
+    }
+
+    @Override
+    public void clear() {
+        invoices.clear();
     }
 }

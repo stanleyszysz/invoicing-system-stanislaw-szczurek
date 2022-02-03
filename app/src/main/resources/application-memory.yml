@@ -1,0 +1,7 @@
+pl:
+  futurecollars:
+    invoicing:
+      db: memory
+
+server:
+  port: 8098
