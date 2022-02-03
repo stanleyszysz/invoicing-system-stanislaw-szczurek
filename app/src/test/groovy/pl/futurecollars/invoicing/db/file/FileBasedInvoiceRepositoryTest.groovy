@@ -1,17 +1,14 @@
 package pl.futurecollars.invoicing.db.file
 
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.context.SpringBootTest
 import pl.futurecollars.invoicing.exceptions.DbException
-import pl.futurecollars.invoicing.model.Address
-import pl.futurecollars.invoicing.model.Company
-import pl.futurecollars.invoicing.model.Invoice
-import pl.futurecollars.invoicing.model.InvoiceEntry
-import pl.futurecollars.invoicing.model.Vat
-import pl.futurecollars.invoicing.services.FileService
-import pl.futurecollars.invoicing.services.JsonService
+import pl.futurecollars.invoicing.model.*
 import spock.lang.Specification
 
 import java.time.LocalDate
 
+@SpringBootTest
 class FileBasedInvoiceRepositoryTest extends Specification {
 
     def buyer1 = new Company("5252287009", "Torte", new Address("Solec", "05-532", "Słonecznikowa", "8"))
@@ -33,12 +30,9 @@ class FileBasedInvoiceRepositoryTest extends Specification {
     def invoice1 = new Invoice(id1, dateAt1, seller1, buyer1, entries1)
     def invoice2 = new Invoice(id2, dateAt2, seller2, buyer2, entries2)
     def invoice3 = new Invoice(id3, dateAt2, seller1, buyer2, entries3)
-    def fileDb = File.createTempFile('invoices', '.txt')
-    def fileService = new FileService("classpath:invoices.txt")
-    def jsonService = new JsonService<Invoice>()
-    def fileRepository = new FileBasedInvoiceRepository(fileService, jsonService)
 
-
+    @Autowired
+    FileBasedInvoiceRepository fileRepository
 
     def "should save invoices to file"() {
         when:

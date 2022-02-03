@@ -19,7 +19,7 @@ public class FileService {
         try {
             this.invoicesDbPath = ResourceUtils.getFile(invoicesDbPath).toPath();
         } catch (FileNotFoundException e) {
-            log.warn("File exist");
+            log.warn("File not exist");
         }
     }
 
