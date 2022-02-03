@@ -59,7 +59,7 @@ public class FileService {
         try {
             Files.write(invoicesDbPath, "".getBytes());
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new FileSystemException("File system processing error.");
         }
     }
 }

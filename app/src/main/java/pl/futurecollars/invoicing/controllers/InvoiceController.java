@@ -28,25 +28,25 @@ public class InvoiceController {
     @PostMapping
     public ResponseEntity<Invoice> save(@RequestBody Invoice invoice) {
         invoice.generatedId();
-        log.debug("Cannot adding new invoice");
+        log.debug("Adding new invoice");
         return ResponseEntity.ok(invoiceService.save(invoice));
     }
 
     @GetMapping(path = "/{id}")
     public ResponseEntity<Optional<Invoice>> getById(@PathVariable UUID id) {
-        log.debug("Cannot getting invoice by id: " + id);
+        log.debug("Getting invoice by id: " + id);
         return ResponseEntity.ok(invoiceService.getById(id));
     }
 
     @GetMapping
     public ResponseEntity<List<Invoice>> getAll() {
-        log.debug("Cannot list all invoices");
+        log.debug("Getting list of all invoice");
         return ResponseEntity.ok(invoiceService.getAll());
     }
 
     @PatchMapping(path = "/{id}")
     public ResponseEntity<Invoice> update(@PathVariable UUID id, @RequestBody Invoice updatedInvoice) {
-        log.debug("Cannot updating invoice by id: " + id);
+        log.debug("Updating invoice by id: " + id);
         return ResponseEntity.ok(invoiceService.update(id, updatedInvoice));
     }
 
@@ -57,7 +57,7 @@ public class InvoiceController {
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(204).build();
         }
-        log.debug("Cannot deleting invoice by id: " + id);
+        log.debug("Deleting invoice by id: " + id);
         return ResponseEntity.noContent().build();
     }
 }
