@@ -57,7 +57,6 @@ public class FileService {
 
     public void clear() {
         try {
-            //            Files.writeString(FileConfiguration.INVOICES_DB_PATH, "");
             Files.write(invoicesDbPath, "".getBytes());
         } catch (IOException e) {
             e.printStackTrace();

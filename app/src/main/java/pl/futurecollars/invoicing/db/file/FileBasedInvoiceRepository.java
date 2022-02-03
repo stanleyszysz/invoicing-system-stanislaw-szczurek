@@ -13,9 +13,6 @@ import pl.futurecollars.invoicing.services.JsonService;
 
 public class FileBasedInvoiceRepository implements InvoiceRepository {
 
-    //    @Value(value = "${invoicing.system.stanislaw.szczurek.db.file.dir}");
-    //    private Path dbPath;
-
     private final FileService fileService;
     private final JsonService<Invoice> jsonService;
 

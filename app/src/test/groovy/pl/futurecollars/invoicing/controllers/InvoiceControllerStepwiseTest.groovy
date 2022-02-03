@@ -3,10 +3,8 @@ package pl.futurecollars.invoicing.controllers
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.context.annotation.PropertySource
 import org.springframework.http.MediaType
 import org.springframework.test.context.ActiveProfiles
-import org.springframework.test.context.TestPropertySource
 import org.springframework.test.web.servlet.MockMvc
 import pl.futurecollars.invoicing.db.InvoiceRepository
 import pl.futurecollars.invoicing.helpers.TestHelpers
@@ -16,7 +14,6 @@ import pl.futurecollars.invoicing.services.JsonService
 import spock.lang.Shared
 import spock.lang.Specification
 import spock.lang.Stepwise
-
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
