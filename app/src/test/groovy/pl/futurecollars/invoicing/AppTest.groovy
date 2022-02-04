@@ -4,7 +4,7 @@ import spock.lang.Specification
 
 class AppTest extends Specification {
 
-    def "coverage test for app class"() {
+    def "should initialize applications"() {
         expect:
         def app = new App()
         app.main()

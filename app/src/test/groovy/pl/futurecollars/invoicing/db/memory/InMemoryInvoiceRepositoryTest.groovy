@@ -112,12 +112,11 @@ class InMemoryInvoiceRepositoryTest extends Specification {
     }
 
     def "should clear database"() {
-        given:
+        when:
         repository.save(invoice1)
         repository.save(invoice2)
         repository.save(invoice3)
 
-        when:
         repository.clear()
 
         then:

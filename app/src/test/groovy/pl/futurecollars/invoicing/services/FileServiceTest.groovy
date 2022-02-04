@@ -2,7 +2,6 @@ package pl.futurecollars.invoicing.services
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import pl.futurecollars.invoicing.exceptions.FileSystemException
 import spock.lang.Specification
 
 import java.nio.file.StandardOpenOption
@@ -10,14 +9,14 @@ import java.nio.file.StandardOpenOption
 @SpringBootTest
 class FileServiceTest extends Specification {
 
-        @Autowired
-        private FileService fileService
+    @Autowired
+    private FileService fileService
 
     void cleanup() {
         fileService.clear()
     }
 
-    def "WriteToFile"() {
+    def "should write object to file"() {
         when:
         fileService.writeToFile("Test")
 
@@ -25,7 +24,7 @@ class FileServiceTest extends Specification {
         noExceptionThrown()
     }
 
-    def "OverwriteTheFile"() {
+    def "should overwrite object to file"() {
         when:
         fileService.overwriteTheFile("Test", StandardOpenOption.TRUNCATE_EXISTING)
 
@@ -33,7 +32,7 @@ class FileServiceTest extends Specification {
         noExceptionThrown()
     }
 
-    def "ReadFile"() {
+    def "should read file"() {
         when:
         fileService.readFile()
 

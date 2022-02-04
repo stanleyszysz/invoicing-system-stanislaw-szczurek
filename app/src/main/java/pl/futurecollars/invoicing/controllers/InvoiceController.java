@@ -26,7 +26,6 @@ public class InvoiceController implements InvoiceControllerApi {
     private final InvoiceService invoiceService;
 
     @Override
-    @PostMapping
     public ResponseEntity<Invoice> save(@RequestBody Invoice invoice) {
         invoice.generatedId();
         log.debug("Adding new invoice");
@@ -34,28 +33,24 @@ public class InvoiceController implements InvoiceControllerApi {
     }
 
     @Override
-    @GetMapping(path = "/{id}")
     public ResponseEntity<Optional<Invoice>> getById(@PathVariable UUID id) {
         log.debug("Getting invoice by id: " + id);
         return ResponseEntity.ok(invoiceService.getById(id));
     }
 
     @Override
-    @GetMapping
     public ResponseEntity<List<Invoice>> getAll() {
         log.debug("Getting list of all invoice");
         return ResponseEntity.ok(invoiceService.getAll());
     }
 
     @Override
-    @PatchMapping(path = "/{id}")
     public ResponseEntity<Invoice> update(@PathVariable UUID id, @RequestBody Invoice updatedInvoice) {
         log.debug("Updating invoice by id: " + id);
         return ResponseEntity.ok(invoiceService.update(id, updatedInvoice));
     }
 
     @Override
-    @DeleteMapping(path = "/{id}")
     public ResponseEntity<Void> delete(@PathVariable UUID id) {
         try {
             invoiceService.delete(id);
