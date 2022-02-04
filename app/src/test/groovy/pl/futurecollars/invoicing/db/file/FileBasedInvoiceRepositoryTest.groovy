@@ -97,4 +97,17 @@ class FileBasedInvoiceRepositoryTest extends Specification {
         then:
         fileRepository.getAll().size() == numberOfLine + 2
     }
+
+    def "should clear database file"() {
+        given:
+        fileRepository.save(invoice1)
+        fileRepository.save(invoice2)
+        fileRepository.save(invoice3)
+
+        when:
+        fileRepository.clear()
+
+        then:
+        fileRepository.getAll().size() == 0
+    }
 }

@@ -4,6 +4,7 @@ buildscript {
         groovyVersion = "3.0.9"
         lombokVersion = "1.18.22"
         jaksonVersion = "2.13.1"
+        springDocVersion = "1.6.5"
         spockVersion = "2.0-groovy-3.0"
         guavaVersion = "31.0.1-jre"
     }
@@ -49,6 +50,7 @@ dependencies {
     implementation "com.fasterxml.jackson.core:jackson-databind:${jaksonVersion}"
     implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:${jaksonVersion}"
     implementation "com.google.guava:guava:${guavaVersion}"
+    implementation "org.springdoc:springdoc-openapi-ui:${springDocVersion}"
 
     testAnnotationProcessor "org.projectlombok:lombok:${lombokVersion}"
 
@@ -94,13 +96,6 @@ jacocoTestCoverageVerification {
     violationRules {
         rule {
             limit {
-                counter = 'BRANCH'
-                minimum = 0.85
-            }
-        }
-        rule {
-            limit {
-                counter = 'LINE'
                 minimum = 0.85
             }
         }

@@ -5,8 +5,6 @@ import pl.futurecollars.invoicing.helpers.TestHelpers
 import pl.futurecollars.invoicing.model.Invoice
 import spock.lang.Specification
 
-import java.nio.file.StandardOpenOption
-
 class JsonServiceTest extends Specification {
 
     def jsonService = new JsonService()

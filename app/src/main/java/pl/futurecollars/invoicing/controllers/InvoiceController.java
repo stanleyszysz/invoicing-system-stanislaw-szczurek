@@ -21,10 +21,11 @@ import pl.futurecollars.invoicing.services.InvoiceService;
 @RestController
 @RequestMapping(path = "/invoices", produces = {"application/json;charset=UTF-8"})
 @RequiredArgsConstructor
-public class InvoiceController {
+public class InvoiceController implements InvoiceControllerApi {
 
     private final InvoiceService invoiceService;
 
+    @Override
     @PostMapping
     public ResponseEntity<Invoice> save(@RequestBody Invoice invoice) {
         invoice.generatedId();
@@ -32,32 +33,37 @@ public class InvoiceController {
         return ResponseEntity.ok(invoiceService.save(invoice));
     }
 
+    @Override
     @GetMapping(path = "/{id}")
     public ResponseEntity<Optional<Invoice>> getById(@PathVariable UUID id) {
         log.debug("Getting invoice by id: " + id);
         return ResponseEntity.ok(invoiceService.getById(id));
     }
 
+    @Override
     @GetMapping
     public ResponseEntity<List<Invoice>> getAll() {
         log.debug("Getting list of all invoice");
         return ResponseEntity.ok(invoiceService.getAll());
     }
 
+    @Override
     @PatchMapping(path = "/{id}")
     public ResponseEntity<Invoice> update(@PathVariable UUID id, @RequestBody Invoice updatedInvoice) {
         log.debug("Updating invoice by id: " + id);
         return ResponseEntity.ok(invoiceService.update(id, updatedInvoice));
     }
 
+    @Override
     @DeleteMapping(path = "/{id}")
     public ResponseEntity<Void> delete(@PathVariable UUID id) {
         try {
             invoiceService.delete(id);
         } catch (IllegalArgumentException e) {
+            log.debug("Deleting invoice by id: " + id);
             return ResponseEntity.status(204).build();
         }
-        log.debug("Deleting invoice by id: " + id);
+        log.debug("Cannot delete invoice by id: " + id);
         return ResponseEntity.noContent().build();
     }
 }
