@@ -15,7 +15,8 @@ class FileServiceTest extends Specification {
     void cleanup() {
         fileService.clear()
     }
-    def "WriteToFile"() {
+
+    def "should write object to file"() {
         when:
         fileService.writeToFile("Test")
 
@@ -23,7 +24,7 @@ class FileServiceTest extends Specification {
         noExceptionThrown()
     }
 
-    def "OverwriteTheFile"() {
+    def "should overwrite object to file"() {
         when:
         fileService.overwriteTheFile("Test", StandardOpenOption.TRUNCATE_EXISTING)
 
@@ -31,7 +32,7 @@ class FileServiceTest extends Specification {
         noExceptionThrown()
     }
 
-    def "ReadFile"() {
+    def "should read file"() {
         when:
         fileService.readFile()
 

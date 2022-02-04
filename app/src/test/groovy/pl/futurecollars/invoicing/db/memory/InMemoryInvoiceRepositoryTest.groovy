@@ -110,4 +110,16 @@ class InMemoryInvoiceRepositoryTest extends Specification {
         then:
         thrown IllegalArgumentException
     }
+
+    def "should clear database"() {
+        when:
+        repository.save(invoice1)
+        repository.save(invoice2)
+        repository.save(invoice3)
+
+        repository.clear()
+
+        then:
+        repository.getAll().size() == 0
+    }
 }

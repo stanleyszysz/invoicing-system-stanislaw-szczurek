@@ -16,3 +16,7 @@ logging:
       futurecollars:
         invoicing: INFO
         invoicing.db: DEBUG
+
+springdoc:
+  swagger-ui:
+    enabled: true
