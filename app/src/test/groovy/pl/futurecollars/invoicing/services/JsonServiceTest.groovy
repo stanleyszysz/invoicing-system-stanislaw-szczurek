@@ -11,7 +11,7 @@ class JsonServiceTest extends Specification {
 
     def "should convert object to json and vice versa"() {
         given:
-        def invoice = TestHelpers.invoice1
+        def invoice = TestHelpers.invoice(1)
 
         when:
         def invoiceToString = jsonService.toJson(invoice)

@@ -8,7 +8,7 @@ import pl.futurecollars.invoicing.model.TaxCalculatorResult;
 
 public interface TaxCalculatorControllerApi {
 
-    @GetMapping("/{taxIdentificationNumber}")
+    @GetMapping("/{taxIdentifier}")
     @Operation(summary = "Tax calculation", description = "Calculation of taxes for the company")
     ResponseEntity<TaxCalculatorResult> taxCalculatorResult(@PathVariable String taxIdentifier);
 }

@@ -33,8 +33,8 @@ class InvoiceControllerStepwiseTest extends Specification {
     @Autowired
     private InvoiceRepository invoiceRepository
 
-    private Invoice invoice1 = TestHelpers.invoice1
-    private Company seller2 = TestHelpers.seller2
+    private Invoice invoice1 = TestHelpers.invoice(1)
+    private Company seller2 = TestHelpers.company(7)
 
     @Shared
     private UUID id
@@ -55,7 +55,7 @@ class InvoiceControllerStepwiseTest extends Specification {
     }
 
 
-    def "add single invoice with seller New Eko"() {
+    def "add single invoice with seller Abra 1"() {
         given:
         invoiceRepository.clear()
 
@@ -101,7 +101,7 @@ class InvoiceControllerStepwiseTest extends Specification {
                 .contentAsString
 
         then:
-        result.contains("Torte")
+        result.contains("Abra 2")
     }
 
     def "updated seller is returned correctly when updating invoice by id"() {
@@ -119,7 +119,7 @@ class InvoiceControllerStepwiseTest extends Specification {
                 .contentAsString
 
         then:
-        result.contains("Egor")
+        result.contains("Abra 7")
     }
 
     def "invoice can be deleted"() {
