@@ -31,10 +31,10 @@ class InvoiceControllerIntegrationTest extends Specification {
     @Autowired
     private InvoiceRepository invoiceRepository
 
-    private Invoice invoice1 = TestHelpers.invoice1
-    private Invoice invoice2 = TestHelpers.invoice2
-    private Invoice invoice3 = TestHelpers.invoice3
-    private Company seller2 = TestHelpers.seller2
+    private Invoice invoice1 = TestHelpers.invoice(1)
+    private Invoice invoice2 = TestHelpers.invoice(3)
+    private Invoice invoice3 = TestHelpers.invoice(5)
+    private Company seller2 = TestHelpers.company(7)
     private UUID id
 
     def setup() {
@@ -89,7 +89,7 @@ class InvoiceControllerIntegrationTest extends Specification {
                 .contentAsString
 
         then:
-        result.contains("New Eko")
+        result.contains("Abra 1")
     }
 
     def "GetById returned null when id doesn't exist"() {
@@ -127,7 +127,7 @@ class InvoiceControllerIntegrationTest extends Specification {
                 .contentAsString
 
         then:
-        result.contains("Egor")
+        result.contains("Abra 7")
     }
 
     def "two invoices remain when one of the three is deleted"() {

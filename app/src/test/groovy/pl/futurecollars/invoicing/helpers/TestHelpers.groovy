@@ -10,23 +10,39 @@ import java.time.LocalDate
 
 class TestHelpers {
 
-    static buyer1 = new Company("5252287009", "Torte", new Address("Solec", "05-532", "Słonecznikowa", "8"))
-    static buyer2 = new Company("5060111906", "Arcon", new Address("Wisła", "08-540", "Kościuszki", "26"))
-    static seller1 = new Company("5891937075", "New Eko", new Address("Żukowo", "83-330", "Witosławy", "20"))
-    static seller2 = new Company("9670365949", "Egor", new Address("Bydgoszcz", "85-039", "Hetmańska", "3"))
-    static dateAt1 = LocalDate.of(2022, 01, 04)
-    static dateAt2 = LocalDate.of(2022, 01, 05)
-    static entry1 = new InvoiceEntry("Pen", 99.99, 22.9977, Vat.VAT_23)
-    static entry2 = new InvoiceEntry("Shampoo", 29.99, 6.8977, Vat.VAT_23)
-    static entry3 = new InvoiceEntry("Teaspoon", 1.95, 0.4485, Vat.VAT_23)
-    static entry4 = new InvoiceEntry("Bag", 3.49, 0.8027, Vat.VAT_23)
-    static entries1 = Arrays.asList(entry1, entry2)
-    static entries2 = Arrays.asList(entry3, entry4)
-    static entries3 = Arrays.asList(entry1, entry2, entry3)
-    static id1 = UUID.randomUUID()
-    static id2 = UUID.randomUUID()
-    static id3 = UUID.randomUUID()
-    static invoice1 = new Invoice(id1, dateAt1, seller1, buyer1, entries1)
-    static invoice2 = new Invoice(id2, dateAt2, seller2, buyer2, entries2)
-    static invoice3 = new Invoice(id3, dateAt2, seller1, buyer2, entries3)
+    static address(int id) {
+        Address.builder()
+                .city("Wroclaw $id")
+                .postalCode("99-99$id")
+                .streetName("Słonecznikowa")
+                .streetNumber("$id")
+                .build()
+    }
+
+    static company(int id) {
+        Company.builder()
+                .taxIdentifier("555555555$id")
+                .name("Abra $id")
+                .address(TestHelpers.address(id))
+                .build()
+    }
+
+    static invoiceEntry(int id) {
+        InvoiceEntry.builder()
+                .description("Product $id")
+                .price(BigDecimal.valueOf(id * 1000))
+                .vatValue(BigDecimal.valueOf(id * 1000 * 0.08))
+                .vatRate(Vat.VAT_8)
+                .build()
+    }
+
+    static invoice(int id) {
+        Invoice.builder()
+                .id(UUID.randomUUID())
+                .dateAt(LocalDate.now())
+                .seller(company(id))
+                .buyer(company(id + 1))
+                .entries((1..5).collect({ invoiceEntry(it) }))
+                .build()
+    }
 }
