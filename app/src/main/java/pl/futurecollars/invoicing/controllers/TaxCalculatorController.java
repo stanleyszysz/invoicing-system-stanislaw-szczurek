@@ -3,9 +3,10 @@ package pl.futurecollars.invoicing.controllers;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import pl.futurecollars.invoicing.model.Company;
 import pl.futurecollars.invoicing.model.TaxCalculatorResult;
 import pl.futurecollars.invoicing.services.TaxCalculatorService;
 
@@ -18,7 +19,7 @@ public class TaxCalculatorController implements TaxCalculatorControllerApi {
     private final TaxCalculatorService taxCalculatorService;
 
     @Override
-    public ResponseEntity<TaxCalculatorResult> taxCalculatorResult(@PathVariable String taxIdentifier) {
-        return ResponseEntity.ok().body(taxCalculatorService.taxCalculatorResult(taxIdentifier));
+    public ResponseEntity<TaxCalculatorResult> taxCalculatorResult(@RequestBody Company company) {
+        return ResponseEntity.ok().body(taxCalculatorService.taxCalculatorResult(company));
     }
 }

@@ -21,4 +21,6 @@ public class InvoiceEntry {
     private BigDecimal vatValue;
     @Schema(name = "Tax rate", required = true)
     private Vat vatRate;
+    @Schema(name = "Car related expense")
+    private Car carRelatedExpense;
 }

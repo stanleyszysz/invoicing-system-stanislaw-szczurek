@@ -1,6 +1,7 @@
 package pl.futurecollars.invoicing.helpers
 
 import pl.futurecollars.invoicing.model.Address
+import pl.futurecollars.invoicing.model.Car
 import pl.futurecollars.invoicing.model.Company
 import pl.futurecollars.invoicing.model.Invoice
 import pl.futurecollars.invoicing.model.InvoiceEntry
@@ -19,11 +20,20 @@ class TestHelpers {
                 .build()
     }
 
+    static car(int id, boolean personalUsage) {
+        Car.builder()
+                .registrationNumber("DW 5G88$id")
+                .personalUsage(personalUsage)
+                .build()
+    }
+
     static company(int id) {
         Company.builder()
                 .taxIdentifier("555555555$id")
                 .name("Abra $id")
                 .address(TestHelpers.address(id))
+                .pensionInsurance(BigDecimal.valueOf(1000) * BigDecimal.valueOf(id))
+                .healthInsurance(BigDecimal.valueOf(500) * BigDecimal.valueOf(id))
                 .build()
     }
 
@@ -31,8 +41,9 @@ class TestHelpers {
         InvoiceEntry.builder()
                 .description("Product $id")
                 .price(BigDecimal.valueOf(id * 1000))
-                .vatValue(BigDecimal.valueOf(id * 1000 * 0.08))
-                .vatRate(Vat.VAT_8)
+                .vatValue(BigDecimal.valueOf(id * 1000 * 0.23))
+                .vatRate(Vat.VAT_23)
+                .carRelatedExpense(car(1, false))
                 .build()
     }
 
