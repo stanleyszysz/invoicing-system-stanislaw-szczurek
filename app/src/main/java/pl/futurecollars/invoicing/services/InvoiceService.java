@@ -35,4 +35,8 @@ public class InvoiceService {
     public void delete(UUID id) {
         invoiceRepository.delete(id);
     }
+
+    public void clear() {
+        invoiceRepository.clear();
+    }
 }

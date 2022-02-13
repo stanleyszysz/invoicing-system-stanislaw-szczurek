@@ -1,52 +1,44 @@
 package pl.futurecollars.invoicing.db.file
 
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.test.context.ActiveProfiles
+import pl.futurecollars.invoicing.db.InvoiceRepository
 import pl.futurecollars.invoicing.exceptions.DbException
-import pl.futurecollars.invoicing.model.*
+import pl.futurecollars.invoicing.helpers.TestHelpers
+import pl.futurecollars.invoicing.model.Invoice
 import spock.lang.Specification
 
-import java.time.LocalDate
-
+@ActiveProfiles("file")
+@AutoConfigureMockMvc
 @SpringBootTest
 class FileBasedInvoiceRepositoryTest extends Specification {
 
-    def buyer1 = new Company("5252287009", "Torte", new Address("Solec", "05-532", "Słonecznikowa", "8"))
-    def buyer2 = new Company("5060111906", "Arcon", new Address("Wisła", "08-540", "Kościuszki", "26"))
-    def seller1 = new Company("5891937075", "New Eko", new Address("Żukowo", "83-330", "Witosławy", "20"))
-    def seller2 = new Company("9670365949", "Egor", new Address("Bydgoszcz", "85-039", "Hetmańska", "3"))
-    def dateAt1 = LocalDate.of(2022, 01, 04)
-    def dateAt2 = LocalDate.of(2022, 01, 05)
-    def entry1 = new InvoiceEntry("Pen", 99.99, 22.9977, Vat.VAT_23)
-    def entry2 = new InvoiceEntry("Shampoo", 29.99, 6.8977, Vat.VAT_23)
-    def entry3 = new InvoiceEntry("Teaspoon", 1.95, 0.4485, Vat.VAT_23)
-    def entry4 = new InvoiceEntry("Bag", 3.49, 0.8027, Vat.VAT_23)
-    def entries1 = Arrays.asList(entry1, entry2)
-    def entries2 = Arrays.asList(entry3, entry4)
-    def entries3 = Arrays.asList(entry1, entry2, entry3)
-    def id1 = UUID.randomUUID()
-    def id2 = UUID.randomUUID()
-    def id3 = UUID.randomUUID()
-    def invoice1 = new Invoice(id1, dateAt1, seller1, buyer1, entries1)
-    def invoice2 = new Invoice(id2, dateAt2, seller2, buyer2, entries2)
-    def invoice3 = new Invoice(id3, dateAt2, seller1, buyer2, entries3)
-
     @Autowired
-    FileBasedInvoiceRepository fileRepository
+    private InvoiceRepository invoiceRepository
+
+    private Invoice invoice1 = TestHelpers.invoice(1)
+    private Invoice invoice2 = TestHelpers.invoice(3)
+    private Invoice invoice3 = TestHelpers.invoice(5)
+
+    def setup() {
+        invoiceRepository.clear()
+    }
 
     def "should save invoices to file"() {
         when:
-        fileRepository.save(invoice1)
+        invoiceRepository.save(invoice1)
 
         then:
-        fileRepository.getById(invoice1.getId()).isPresent()
-        fileRepository.getById(invoice1.getId()).get().getBuyer().getName() == "Torte"
+        invoiceRepository.getById(invoice1.getId()).isPresent()
+        invoiceRepository.getById(invoice1.getId()).get().getBuyer().getName() == "Abra 2"
     }
 
     def "should return exception when try save invoice with existing id"() {
         when:
-        fileRepository.save(invoice1)
-        fileRepository.save(invoice1)
+        invoiceRepository.save(invoice1)
+        invoiceRepository.save(invoice1)
 
         then:
         thrown DbException
@@ -54,60 +46,79 @@ class FileBasedInvoiceRepositoryTest extends Specification {
 
     def "should get invoice by id"() {
         when:
-        fileRepository.save(invoice1)
-        fileRepository.save(invoice2)
+        invoiceRepository.save(invoice1)
+        invoiceRepository.save(invoice2)
 
         then:
-        fileRepository.getById(invoice1.getId()).isPresent()
-        fileRepository.getById(invoice2.getId()).get().getBuyer().getName() == "Arcon"
+        invoiceRepository.getById(invoice1.getId()).isPresent()
+        invoiceRepository.getById(invoice2.getId()).get().getBuyer().getName() == "Abra 4"
     }
 
     def "should get number of entries in database file"() {
         given:
-        def numberOfLine = fileRepository.getAll().size()
-        fileRepository.save(invoice1)
-        fileRepository.save(invoice2)
-        fileRepository.save(invoice3)
+        def numberOfLine = invoiceRepository.getAll().size()
+        invoiceRepository.save(invoice1)
+        invoiceRepository.save(invoice2)
+        invoiceRepository.save(invoice3)
 
         expect:
-        fileRepository.getAll().size() == numberOfLine + 3
+        invoiceRepository.getAll().size() == numberOfLine + 3
     }
 
     def "should can update invoice"() {
         given:
-        fileRepository.save(invoice1)
+        invoiceRepository.save(invoice1)
 
         when:
-        def updateInvoice = fileRepository.update(invoice1.getId(), invoice2)
+        def updateInvoice = invoiceRepository.update(invoice1.getId(), invoice2)
 
         then:
-        updateInvoice.getSeller().getName() == "Egor"
+        updateInvoice.getSeller().getName() == "Abra 3"
+    }
+
+    def "should return exception when can't update invoice"() {
+        given:
+        invoiceRepository.save(invoice1)
+
+        when:
+        def updateInvoice = invoiceRepository.update(UUID.fromString("9ced63bd-d4f7-4bcf-8e15-2ce6163e9f62"), invoice2)
+
+        then:
+        thrown IllegalArgumentException
     }
 
     def "should get number of entries in database file after deleting the invoice"() {
         given:
-        def numberOfLine = fileRepository.getAll().size()
-        fileRepository.save(invoice1)
-        fileRepository.save(invoice2)
-        fileRepository.save(invoice3)
+        def numberOfLine = invoiceRepository.getAll().size()
+        invoiceRepository.save(invoice1)
+        invoiceRepository.save(invoice2)
+        invoiceRepository.save(invoice3)
 
         when:
-        fileRepository.delete(invoice2.getId())
+        invoiceRepository.delete(invoice2.getId())
 
         then:
-        fileRepository.getAll().size() == numberOfLine + 2
+        invoiceRepository.getAll().size() == numberOfLine + 2
+    }
+
+    def "should return exception when id doesn't exist"() {
+        when:
+        invoiceRepository.delete(UUID.fromString("9ced63bd-d4f7-4bcf-8e15-2ce6163e9f62"))
+
+        then:
+        thrown IllegalArgumentException
     }
 
     def "should clear database file"() {
         given:
-        fileRepository.save(invoice1)
-        fileRepository.save(invoice2)
-        fileRepository.save(invoice3)
+        invoiceRepository.save(invoice1)
+        invoiceRepository.save(invoice2)
+        invoiceRepository.save(invoice3)
 
         when:
-        fileRepository.clear()
+        invoiceRepository.clear()
 
         then:
-        fileRepository.getAll().size() == 0
+        invoiceRepository.getAll().size() == 0
     }
 }
