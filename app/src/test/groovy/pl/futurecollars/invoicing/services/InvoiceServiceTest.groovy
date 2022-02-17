@@ -4,19 +4,9 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
-import pl.futurecollars.invoicing.db.InvoiceRepository
-import pl.futurecollars.invoicing.db.memory.InMemoryInvoiceRepository
 import pl.futurecollars.invoicing.helpers.TestHelpers
-import pl.futurecollars.invoicing.model.Address
-import pl.futurecollars.invoicing.model.Company
 import pl.futurecollars.invoicing.model.Invoice
-import pl.futurecollars.invoicing.model.InvoiceEntry
-import pl.futurecollars.invoicing.model.Vat
 import spock.lang.Specification
-
-import java.time.LocalDate
-
-
 
 @ActiveProfiles("memory")
 @AutoConfigureMockMvc

@@ -1,0 +1,5 @@
+pl:
+  futurecollars:
+    invoicing:
+      db: file
+      dir: classpath:invoices-json.txt
