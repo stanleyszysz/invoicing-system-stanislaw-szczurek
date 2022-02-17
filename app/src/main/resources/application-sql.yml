@@ -1,0 +1,16 @@
+pl:
+  futurecollars:
+    invoicing:
+      db: memory
+
+server:
+  port: 8098
+
+spring:
+  datasource:
+    username: postgres
+    password: pass1234
+    url: jdbc:postgresql://localhost:5432/invoicing
+    driver-class-name: org.postgresql.Driver
+  flyway:
+    enabled: true

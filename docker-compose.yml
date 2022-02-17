@@ -5,4 +5,18 @@ services:
     container_name: docker1
     build: .
     ports:
-      - "8080:8099"
+      - "8080:8098"
+  db:
+    container_name: db
+    image: postgres
+    env_file:
+      - db.env
+    ports:
+      - "5432:5432"
+  pgAdmin:
+    container_name: pg_admin
+    image: dpage/pgadmin4
+    env_file:
+      - pgadmin.env
+    ports:
+      - "8080:80"

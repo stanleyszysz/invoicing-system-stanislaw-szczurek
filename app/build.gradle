@@ -1,5 +1,7 @@
 buildscript {
     ext {
+        postgresqlVersion = "42.3.2"
+        flywayVersion = "8.5.0"
         junitVersion = "4.13.2"
         groovyVersion = "3.0.9"
         lombokVersion = "1.18.22"
@@ -8,11 +10,15 @@ buildscript {
         spockVersion = "2.0-groovy-3.0"
         guavaVersion = "31.0.1-jre"
     }
+//    dependencies {
+//        classpath "org.postgresql:postgresql:${postgresqlVersion}"
+//    }
 }
 
 plugins {
     id 'org.springframework.boot' version '2.6.2'
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+    id "org.flywaydb.flyway" version "${flywayVersion}"
     id 'java'
     id 'groovy'
     id 'application'
@@ -45,12 +51,16 @@ dependencies {
     annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
 
     compileOnly "org.projectlombok:lombok:${lombokVersion}"
+    compileOnly "org.flywaydb:flyway-core:${flywayVersion}"
 
     implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-jdbc'
     implementation "com.fasterxml.jackson.core:jackson-databind:${jaksonVersion}"
     implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:${jaksonVersion}"
     implementation "com.google.guava:guava:${guavaVersion}"
     implementation "org.springdoc:springdoc-openapi-ui:${springDocVersion}"
+
+    runtimeOnly "org.postgresql:postgresql:${postgresqlVersion}"
 
     testAnnotationProcessor "org.projectlombok:lombok:${lombokVersion}"
 
