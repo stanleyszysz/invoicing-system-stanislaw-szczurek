@@ -19,6 +19,8 @@ public class Invoice {
     private UUID id;
     @Schema(name = "Date of invoice", example = "2022-02-03", required = true)
     private LocalDate dateAt;
+    @Schema(name = "Invoice number", example = "2022/02/17/001", required = true)
+    private String number;
     @Schema(name = "Seller", required = true)
     private Company seller;
     @Schema(name = "Buyer", required = true)

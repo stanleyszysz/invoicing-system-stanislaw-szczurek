@@ -1,5 +1,8 @@
 buildscript {
     ext {
+        postgresqlVersion = "42.3.2"
+        flywayVersion = "8.5.0"
+        h2Version = '2.1.210'
         junitVersion = "4.13.2"
         groovyVersion = "3.0.9"
         lombokVersion = "1.18.22"
@@ -11,7 +14,7 @@ buildscript {
 }
 
 plugins {
-    id 'org.springframework.boot' version '2.6.2'
+    id 'org.springframework.boot' version '2.6.3'
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
     id 'java'
     id 'groovy'
@@ -47,10 +50,16 @@ dependencies {
     compileOnly "org.projectlombok:lombok:${lombokVersion}"
 
     implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-jdbc'
     implementation "com.fasterxml.jackson.core:jackson-databind:${jaksonVersion}"
     implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:${jaksonVersion}"
     implementation "com.google.guava:guava:${guavaVersion}"
     implementation "org.springdoc:springdoc-openapi-ui:${springDocVersion}"
+
+    runtimeOnly "org.flywaydb:flyway-core:${flywayVersion}"
+
+    runtimeOnly "com.h2database:h2:${h2Version}"
+    runtimeOnly "org.postgresql:postgresql:${postgresqlVersion}"
 
     testAnnotationProcessor "org.projectlombok:lombok:${lombokVersion}"
 
@@ -107,3 +116,19 @@ jacocoTestCoverageVerification {
         }))
     }
 }
+
+task testWithFileDatabase(type: Test) {
+    systemProperty 'spring.profiles.active', 'file'
+}
+
+task testWithMemoryDatabase(type: Test) {
+    systemProperty 'spring.profiles.active', 'memory'
+}
+
+task testWithSQLDatabase(type: Test) {
+    systemProperty 'spring.profiles.active', 'sql'
+}
+
+check.dependsOn testWithFileDatabase
+check.dependsOn testWithFileDatabase
+//checkdependsOn testWithSqlDatabase

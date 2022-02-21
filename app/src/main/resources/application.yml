@@ -1,22 +1,24 @@
 server:
   port: 8099
 
-pl:
-  futurecollars:
-    invoicing:
-      db: file
-      dir: classpath:invoices-json.txt
-
+debug: false
 logging:
   level:
+    ROOT: INFO
     org:
       springframework:
-        boot: ERROR
+        boot: INFO
     pl:
       futurecollars:
         invoicing: INFO
-        invoicing.db: DEBUG
+        invoicing.db: INFO
 
 springdoc:
   swagger-ui:
     enabled: true
+
+spring:
+  profiles:
+    active: memory
+  flyway:
+    enabled: false
