@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.UUID;
 import pl.futurecollars.invoicing.db.InvoiceRepository;
-import pl.futurecollars.invoicing.exceptions.DbException;
 import pl.futurecollars.invoicing.model.Invoice;
 
 public class InMemoryInvoiceRepository implements InvoiceRepository {
@@ -21,7 +21,7 @@ public class InMemoryInvoiceRepository implements InvoiceRepository {
             invoices.put(id, invoice);
             return invoice;
         } else {
-            throw new DbException("ID already exist.");
+            throw new NoSuchElementException("ID already exist.");
         }
     }
 
@@ -42,7 +42,7 @@ public class InMemoryInvoiceRepository implements InvoiceRepository {
             invoices.replace(id, updatedInvoice);
             return updatedInvoice;
         } else {
-            throw new IllegalArgumentException("Id" + id + "doesn't exist.");
+            throw new NoSuchElementException("Id" + id + "doesn't exist.");
         }
     }
 
@@ -51,7 +51,7 @@ public class InMemoryInvoiceRepository implements InvoiceRepository {
         if (invoices.get(id) != null) {
             invoices.remove(id);
         } else {
-            throw new IllegalArgumentException("Id " + id + " doesn't exist.");
+            throw new NoSuchElementException("Id " + id + " doesn't exist.");
         }
     }
 

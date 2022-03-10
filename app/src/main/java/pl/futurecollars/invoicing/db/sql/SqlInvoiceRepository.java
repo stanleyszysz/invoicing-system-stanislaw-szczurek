@@ -3,6 +3,7 @@ package pl.futurecollars.invoicing.db.sql;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.UUID;
 import javax.annotation.PostConstruct;
@@ -10,7 +11,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import pl.futurecollars.invoicing.db.InvoiceRepository;
-import pl.futurecollars.invoicing.exceptions.DbException;
 import pl.futurecollars.invoicing.model.Address;
 import pl.futurecollars.invoicing.model.Car;
 import pl.futurecollars.invoicing.model.Company;
@@ -21,20 +21,21 @@ import pl.futurecollars.invoicing.model.Vat;
 @AllArgsConstructor
 public class SqlInvoiceRepository implements InvoiceRepository {
 
-    public static final String SELECT_FROM_INVOICE_QUERY = "select "
-        + "i.id, i.invoice_number, i.date_at, "
-        + "s.id as seller_id, s.name as seller_name, s.tax_identifier as seller_tax_number, "
-        + "sa.city as seller_city, sa.postal_code as seller_postal_code, sa.street_name as seller_street_name, "
-        + "sa.street_number as seller_street_number, "
-        + "s.pension_insurance as seller_pension_insurance, s.health_insurance as seller_health_insurance, "
-        + "b.id as buyer_id, b.name as buyer_name, b.tax_identifier as buyer_tax_number, "
-        + "ba.city as buyer_city, ba.postal_code as buyer_postal_code, ba.street_name as buyer_street_name, ba.street_number as buyer_street_number, "
-        + "b.pension_insurance as buyer_pension_insurance, b.health_insurance as buyer_health_insurance "
-        + "from invoice i "
-        + "inner join company s on i.seller = s.id "
-        + "inner join company b on i.buyer = b.id "
-        + "inner join address sa on s.id = sa.company_id "
-        + "inner join address ba on b.id = ba.company_id";
+    public static final String SELECT_FROM_INVOICE_QUERY = """
+        select 
+        i.id, i.invoice_number, i.date_at, 
+        s.id as seller_id, s.name as seller_name, s.tax_identifier as seller_tax_number, 
+        sa.city as seller_city, sa.postal_code as seller_postal_code, sa.street_name as seller_street_name, 
+        sa.street_number as seller_street_number, 
+        s.pension_insurance as seller_pension_insurance, s.health_insurance as seller_health_insurance, 
+        b.id as buyer_id, b.name as buyer_name, b.tax_identifier as buyer_tax_number, 
+        ba.city as buyer_city, ba.postal_code as buyer_postal_code, ba.street_name as buyer_street_name, ba.street_number as buyer_street_number, 
+        b.pension_insurance as buyer_pension_insurance, b.health_insurance as buyer_health_insurance 
+        from invoice i 
+        inner join company s on i.seller = s.id 
+        inner join company b on i.buyer = b.id 
+        inner join address sa on s.id = sa.company_id 
+        inner join address ba on b.id = ba.company_id""";
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -43,7 +44,7 @@ public class SqlInvoiceRepository implements InvoiceRepository {
 
     @PostConstruct
     void initVatRatesMap() {
-        jdbcTemplate.query("select * from vat", rs -> {
+        jdbcTemplate.query("select id, name from vat", rs -> {
             Vat vat = Vat.valueOf(rs.getString("name"));
             int id = rs.getInt("id");
             vatToId.put(vat, id);
@@ -126,13 +127,14 @@ public class SqlInvoiceRepository implements InvoiceRepository {
 
             return invoice;
         } else {
-            throw new DbException("ID already exist.");
+            throw new NoSuchElementException("ID already exist.");
         }
     }
 
     @Override
     public Optional<Invoice> getById(UUID id) {
-        List<Invoice> invoices = jdbcTemplate.query(SELECT_FROM_INVOICE_QUERY + " where i.id = '" + id + "'", invoiceRowMapper());
+        // List<Invoice> invoices = jdbcTemplate.query(SELECT_FROM_INVOICE_QUERY + " where i.id = '" + id + "'", invoiceRowMapper());
+        List<Invoice> invoices = jdbcTemplate.query(SELECT_FROM_INVOICE_QUERY + String.format(" where i.id = '%s'", id), invoiceRowMapper());
         return invoices.isEmpty() ? Optional.empty() : Optional.of(invoices.get(0));
     }
 
@@ -145,11 +147,12 @@ public class SqlInvoiceRepository implements InvoiceRepository {
         return (rs, rowNr) -> {
             UUID invoiceId = UUID.fromString(rs.getString("id"));
             List<InvoiceEntry> invoiceEntries = jdbcTemplate.query(
-                "select * from invoice_entry "
+                "select invoice_entry.id, description, price, vat_value, vat_rate, car_related_expense, "
+                    + "registration_number, personal_usage from invoice_entry "
                     + "inner join invoice on invoice_entry.invoice = invoice.id "
                     + "inner join company on invoice.seller = company.id "
                     + "inner join car on invoice_entry.car_related_expense = car.id "
-                    + "where invoice.id = '" + invoiceId + "'",
+                    + String.format(" where invoice.id = '%s'", invoiceId),
                 (response, ignored) -> InvoiceEntry.builder()
                     .id(UUID.fromString(response.getString("id")))
                     .description(response.getString("description"))
@@ -204,11 +207,12 @@ public class SqlInvoiceRepository implements InvoiceRepository {
 
     @Override
     public Invoice update(UUID id, Invoice updatedInvoice) {
+        String idInsertToQuery = String.format("'%s'", id);
         if (this.getById(id).isPresent()) {
             updatedInvoice.setId(id);
             jdbcTemplate.update(
                 "update company set tax_identifier = ?, name = ?, health_insurance = ?, pension_insurance = ? where id = "
-                    + "(select seller from invoice where id = '" + id + "')",
+                    + "(select seller from invoice where id = " + idInsertToQuery + ")",
                     updatedInvoice.getSeller().getTaxIdentifier(),
                     updatedInvoice.getSeller().getName(),
                     updatedInvoice.getSeller().getPensionInsurance(),
@@ -217,7 +221,7 @@ public class SqlInvoiceRepository implements InvoiceRepository {
 
             jdbcTemplate.update(
                     "update company set tax_identifier = ?, name = ?, health_insurance = ?, pension_insurance = ? where id = "
-                        + "(select buyer from invoice where id = '" + id + "')",
+                        + "(select buyer from invoice where id = " + idInsertToQuery + ")",
                     updatedInvoice.getBuyer().getTaxIdentifier(),
                     updatedInvoice.getBuyer().getName(),
                     updatedInvoice.getBuyer().getPensionInsurance(),
@@ -226,7 +230,7 @@ public class SqlInvoiceRepository implements InvoiceRepository {
 
             jdbcTemplate.update(
                     "update address set city = ?, postal_code = ?, street_name = ?, street_number = ? where company_id = "
-                        + "(select seller from invoice where id = '" + id + "')",
+                        + "(select seller from invoice where id = " + idInsertToQuery + ")",
                     updatedInvoice.getSeller().getAddress().getCity(),
                     updatedInvoice.getSeller().getAddress().getPostalCode(),
                     updatedInvoice.getSeller().getAddress().getStreetName(),
@@ -235,19 +239,19 @@ public class SqlInvoiceRepository implements InvoiceRepository {
 
             jdbcTemplate.update(
                     "update address set city = ?, postal_code = ?, street_name = ?, street_number = ? where company_id = "
-                        + "(select buyer from invoice where id = '" + id + "')",
+                        + "(select buyer from invoice where id = " + idInsertToQuery + ")",
                     updatedInvoice.getBuyer().getAddress().getCity(),
                     updatedInvoice.getBuyer().getAddress().getPostalCode(),
                     updatedInvoice.getBuyer().getAddress().getStreetName(),
                     updatedInvoice.getBuyer().getAddress().getStreetNumber()
             );
 
-            jdbcTemplate.update("update invoice set date_at = ?, invoice_number = ? where id = '" + id + "';",
+            jdbcTemplate.update("update invoice set date_at = ?, invoice_number = ? where id = " + idInsertToQuery,
                 updatedInvoice.getDateAt(),
                 updatedInvoice.getNumber()
             );
 
-            jdbcTemplate.execute("delete from invoice_entry where invoice = '" + id + "'");
+            jdbcTemplate.execute("delete from invoice_entry where invoice = " + idInsertToQuery);
 
             updatedInvoice.getEntries().forEach(entry -> {
                 jdbcTemplate.update("update invoice_entry set description = ?, price = ?, vat_value = ?, vat_rate = ?, invoice = ?",
@@ -260,18 +264,18 @@ public class SqlInvoiceRepository implements InvoiceRepository {
             });
             return updatedInvoice;
         } else {
-            throw new IllegalArgumentException("Invoice with id: " + id + " doesn't exist.");
+            throw new NoSuchElementException("Invoice with id: " + id + " doesn't exist.");
         }
     }
 
     @Override
     public void delete(UUID id) {
         if (this.getById(id).isPresent()) {
-            jdbcTemplate.execute("delete from invoice_entry where invoice_entry.invoice = '" + id + "'");
-            jdbcTemplate.execute("delete from invoice where id = '" + id + "'");
+            jdbcTemplate.execute(String.format("delete from invoice_entry where invoice_entry.invoice = '%s'", id));
+            jdbcTemplate.execute(String.format("delete from invoice where id = '%s'", id));
 
         } else {
-            throw new IllegalArgumentException("Invoice with id: " + id + " doesn't exist.");
+            throw new NoSuchElementException("Invoice with id: " + id + " doesn't exist.");
         }
     }
 

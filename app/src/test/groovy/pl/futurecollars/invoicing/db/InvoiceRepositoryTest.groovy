@@ -1,6 +1,5 @@
 package pl.futurecollars.invoicing.db
 
-import pl.futurecollars.invoicing.exceptions.DbException
 import pl.futurecollars.invoicing.helpers.TestHelpers
 import pl.futurecollars.invoicing.model.Invoice
 import spock.lang.Specification
@@ -33,7 +32,7 @@ abstract class InvoiceRepositoryTest extends Specification {
         invoiceRepository.save(invoice1)
 
         then:
-        thrown DbException
+        thrown NoSuchElementException
     }
 
     def "should get invoice by id"() {
@@ -75,7 +74,7 @@ abstract class InvoiceRepositoryTest extends Specification {
         def updateInvoice = invoiceRepository.update(UUID.fromString("9ced63bd-d4f7-4bcf-8e15-2ce6163e9f62"), invoice2)
 
         then:
-        thrown IllegalArgumentException
+        thrown NoSuchElementException
     }
 
     def "should get number of entries in database after deleting the invoice"() {
@@ -96,7 +95,7 @@ abstract class InvoiceRepositoryTest extends Specification {
         invoiceRepository.delete(UUID.fromString("9ced63bd-d4f7-4bcf-8e15-2ce6163e9f62"))
 
         then:
-        thrown IllegalArgumentException
+        thrown NoSuchElementException
     }
 
     def "should clear database"() {

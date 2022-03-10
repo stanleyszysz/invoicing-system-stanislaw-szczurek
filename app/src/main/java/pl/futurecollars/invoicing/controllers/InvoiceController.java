@@ -1,6 +1,7 @@
 package pl.futurecollars.invoicing.controllers;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -50,7 +51,7 @@ public class InvoiceController implements InvoiceControllerApi {
     public ResponseEntity<Void> delete(@PathVariable UUID id) {
         try {
             invoiceService.delete(id);
-        } catch (IllegalArgumentException e) {
+        } catch (NoSuchElementException e) {
             log.debug("Deleting invoice by id: " + id);
             return ResponseEntity.status(204).build();
         }
