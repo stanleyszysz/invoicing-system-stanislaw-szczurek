@@ -10,4 +10,4 @@ spring:
 pl:
   futurecollars:
     invoicing:
-      db: memory
+      db: sql

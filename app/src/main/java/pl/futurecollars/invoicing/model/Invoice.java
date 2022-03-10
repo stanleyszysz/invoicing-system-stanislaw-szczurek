@@ -15,17 +15,17 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Invoice {
 
-    @Schema(name = "Invoice id", example = "3fa85f64-5717-4562-b3fc-2c963f66afa6", required = false)
+    @Schema(description = "Invoice id", example = "3fa85f64-5717-4562-b3fc-2c963f66afa6", required = true)
     private UUID id;
-    @Schema(name = "Date of invoice", example = "2022-02-03", required = true)
+    @Schema(description = "Date of invoice", example = "2022-02-03", required = true)
     private LocalDate dateAt;
-    @Schema(name = "Invoice number", example = "2022/02/17/001", required = true)
+    @Schema(description = "Invoice number", example = "2022/02/17/001", required = true)
     private String number;
-    @Schema(name = "Seller", required = true)
+    @Schema(description = "Seller", required = true)
     private Company seller;
-    @Schema(name = "Buyer", required = true)
+    @Schema(description = "Buyer", required = true)
     private Company buyer;
-    @Schema(name = "Product name", required = true)
+    @Schema(description = "Product name", required = true)
     private List<InvoiceEntry> entries;
 
     public void generatedId() {
