@@ -133,7 +133,6 @@ public class SqlInvoiceRepository implements InvoiceRepository {
 
     @Override
     public Optional<Invoice> getById(UUID id) {
-        // List<Invoice> invoices = jdbcTemplate.query(SELECT_FROM_INVOICE_QUERY + " where i.id = '" + id + "'", invoiceRowMapper());
         List<Invoice> invoices = jdbcTemplate.query(SELECT_FROM_INVOICE_QUERY + String.format(" where i.id = '%s'", id), invoiceRowMapper());
         return invoices.isEmpty() ? Optional.empty() : Optional.of(invoices.get(0));
     }
