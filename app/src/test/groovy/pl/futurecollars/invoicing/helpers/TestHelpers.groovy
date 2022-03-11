@@ -51,6 +51,7 @@ class TestHelpers {
         Invoice.builder()
                 .id(UUID.randomUUID())
                 .dateAt(LocalDate.now())
+                .number("FA/$id")
                 .seller(company(id))
                 .buyer(company(id + 1))
                 .entries((1..5).collect({ invoiceEntry(it) }))

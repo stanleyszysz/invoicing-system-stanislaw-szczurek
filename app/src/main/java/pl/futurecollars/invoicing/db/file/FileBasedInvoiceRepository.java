@@ -2,11 +2,11 @@ package pl.futurecollars.invoicing.db.file;
 
 import java.nio.file.StandardOpenOption;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import pl.futurecollars.invoicing.db.InvoiceRepository;
-import pl.futurecollars.invoicing.exceptions.DbException;
 import pl.futurecollars.invoicing.model.Invoice;
 import pl.futurecollars.invoicing.services.FileService;
 import pl.futurecollars.invoicing.services.JsonService;
@@ -29,7 +29,7 @@ public class FileBasedInvoiceRepository implements InvoiceRepository {
             fileService.writeToFile(json);
             return invoice;
         } else {
-            throw new DbException("ID already exist.");
+            throw new NoSuchElementException("ID already exist.");
         }
     }
 
@@ -61,7 +61,7 @@ public class FileBasedInvoiceRepository implements InvoiceRepository {
         boolean isRemoved = invoices.removeIf(item -> item.getId().equals(id));
 
         if (!isRemoved) {
-            throw new IllegalArgumentException("Id" + id + "doesn't exist.");
+            throw new NoSuchElementException("Id" + id + "doesn't exist.");
         }
 
         fileService.overwriteTheFile(invoices.stream()
