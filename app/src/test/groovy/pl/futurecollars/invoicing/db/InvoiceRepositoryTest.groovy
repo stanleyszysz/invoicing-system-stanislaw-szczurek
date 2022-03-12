@@ -71,7 +71,7 @@ abstract class InvoiceRepositoryTest extends Specification {
         invoiceRepository.save(invoice1)
 
         when:
-        def updateInvoice = invoiceRepository.update(UUID.fromString("9ced63bd-d4f7-4bcf-8e15-2ce6163e9f62"), invoice2)
+        invoiceRepository.update(UUID.fromString("9ced63bd-d4f7-4bcf-8e15-2ce6163e9f62"), invoice2)
 
         then:
         thrown NoSuchElementException

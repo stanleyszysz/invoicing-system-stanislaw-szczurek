@@ -19,7 +19,7 @@ springdoc:
 
 spring:
   profiles:
-    active: sql
+    active: jpa
   flyway:
     enabled: false
   output:

@@ -10,5 +10,5 @@ public enum Vat {
     VAT_8(0.08f),
     VAT_23(0.23f);
 
-    private final float rate;
+    public final float rate;
 }

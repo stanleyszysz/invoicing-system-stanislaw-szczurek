@@ -1,16 +1,17 @@
 package pl.futurecollars.invoicing.db.sql
 
 import org.flywaydb.core.Flyway
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType
-import org.springframework.test.context.ActiveProfiles
+import org.springframework.test.annotation.IfProfileValue
 import pl.futurecollars.invoicing.db.InvoiceRepository
 import pl.futurecollars.invoicing.db.InvoiceRepositoryTest
 
 import javax.sql.DataSource
 
-@ActiveProfiles("sql")
+@IfProfileValue(name = "spring.profiles.active", value = "sql")
 class SqlInvoiceRepositoryTest extends InvoiceRepositoryTest {
 
     @Override
@@ -27,7 +28,7 @@ class SqlInvoiceRepositoryTest extends InvoiceRepositoryTest {
         flyway.migrate()
 
         def repository = new SqlInvoiceRepository(jdbcTemplate)
-        repository.initVatRatesMap()
+        // repository.initVatRatesMap()
         return repository
     }
 }
