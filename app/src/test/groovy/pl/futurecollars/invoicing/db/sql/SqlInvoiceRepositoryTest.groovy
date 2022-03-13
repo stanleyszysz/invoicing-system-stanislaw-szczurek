@@ -1,7 +1,6 @@
 package pl.futurecollars.invoicing.db.sql
 
 import org.flywaydb.core.Flyway
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType
@@ -21,14 +20,13 @@ class SqlInvoiceRepositoryTest extends InvoiceRepositoryTest {
 
         Flyway flyway = Flyway.configure()
                 .dataSource(dataSource)
-                .locations("filesystem:src/test/resources/db/migration")
+                .locations("db/migration")
                 .load()
 
         flyway.clean()
         flyway.migrate()
 
         def repository = new SqlInvoiceRepository(jdbcTemplate)
-        // repository.initVatRatesMap()
         return repository
     }
 }

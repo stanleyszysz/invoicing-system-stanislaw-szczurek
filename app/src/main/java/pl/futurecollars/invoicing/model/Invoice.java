@@ -1,6 +1,5 @@
 package pl.futurecollars.invoicing.model;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDate;
 import java.util.List;
@@ -46,7 +45,6 @@ public class Invoice {
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "invoice")
     @Schema(description = "Product name", required = true)
-    @JsonManagedReference
     private List<InvoiceEntry> entries;
 
     public void generatedId() {

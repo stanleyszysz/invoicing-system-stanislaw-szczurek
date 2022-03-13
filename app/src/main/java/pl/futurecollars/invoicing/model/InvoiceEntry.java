@@ -1,12 +1,13 @@
 package pl.futurecollars.invoicing.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.math.BigDecimal;
 import java.util.UUID;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -14,6 +15,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.GenericGenerator;
 
 @Builder
 @Data
@@ -23,6 +25,11 @@ import lombok.NoArgsConstructor;
 public class InvoiceEntry {
 
     @Id
+    @GeneratedValue(generator = "UUID")
+    @GenericGenerator(
+        name = "UUID",
+        strategy = "org.hibernate.id.UUIDGenerator")
+    @Column(name = "id", columnDefinition = "UUID", updatable = false, nullable = false)
     @Schema(description = "Invoice entry id", example = "3fa85f64-5717-4562-b3fc-2c963f66afa6", required = true)
     private UUID id;
     @Schema(description = "Product name", example = "Shampoo", required = true)
@@ -42,6 +49,6 @@ public class InvoiceEntry {
 
     @ManyToOne(targetEntity = Invoice.class)
     @JoinColumn(name = "invoice_id", nullable = false)
-    @JsonBackReference
+    @JsonIgnore
     private Invoice invoice;
 }
