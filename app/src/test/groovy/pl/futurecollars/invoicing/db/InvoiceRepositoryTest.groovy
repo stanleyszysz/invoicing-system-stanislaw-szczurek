@@ -1,5 +1,7 @@
 package pl.futurecollars.invoicing.db
 
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.core.env.Environment
 import pl.futurecollars.invoicing.helpers.TestHelpers
 import pl.futurecollars.invoicing.model.Invoice
 import spock.lang.Specification
@@ -9,30 +11,33 @@ abstract class InvoiceRepositoryTest extends Specification {
     InvoiceRepository invoiceRepository = getRepositoryInstance()
     abstract InvoiceRepository getRepositoryInstance()
 
-    private Invoice invoice1 = TestHelpers.invoice(1)
-    private Invoice invoice2 = TestHelpers.invoice(3)
-    private Invoice invoice3 = TestHelpers.invoice(5)
+    private Invoice invoice1
+    private Invoice invoice2
+    private Invoice invoice3
+
+    @Autowired
+    Environment environment
 
     def setup() {
         invoiceRepository = getRepositoryInstance()
         invoiceRepository.clear()
+
+        def profile = ""
+        if (environment != null) {
+            profile = environment.getActiveProfiles()[0]
+        }
+
+        invoice1 = TestHelpers.invoice(1, profile)
+        invoice2 = TestHelpers.invoice(3, profile)
+        invoice3 = TestHelpers.invoice(5, profile)
     }
 
     def "should save invoices"() {
         when:
-        invoiceRepository.save(invoice1)
+        def savedInvoice= invoiceRepository.save(invoice1)
 
         then:
-        invoiceRepository.getById(invoice1.getId()).isPresent()
-    }
-
-    def "should return exception when try save invoice with existing id"() {
-        when:
-        invoiceRepository.save(invoice1)
-        invoiceRepository.save(invoice1)
-
-        then:
-        thrown NoSuchElementException
+        invoiceRepository.getById(savedInvoice.getId()).isPresent()
     }
 
     def "should get invoice by id"() {

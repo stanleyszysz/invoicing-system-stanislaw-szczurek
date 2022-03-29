@@ -3,6 +3,7 @@ package pl.futurecollars.invoicing.controllers
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.core.env.Environment
 import org.springframework.http.MediaType
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
@@ -14,7 +15,6 @@ import spock.lang.Specification
 
 import java.time.LocalDate
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import static pl.futurecollars.invoicing.helpers.TestHelpers.company
@@ -32,14 +32,26 @@ class TaxCalculatorControllerTest extends Specification {
     private JsonService jsonService
 
     @Autowired
+    Environment environment
+
+    @Autowired
     InvoiceRepository invoiceRepository
 
-    private Invoice invoice1 = TestHelpers.invoice(1)
-    private Invoice invoice2 = TestHelpers.invoice(3)
+    private Invoice invoice1
+    private Invoice invoice2
     private UUID id
 
     def setup() {
         invoiceRepository.clear()
+
+        def profile = ""
+        if (environment != null) {
+            profile = environment.getActiveProfiles()[0]
+        }
+
+        invoice1 = TestHelpers.invoice(1, profile)
+        invoice2 = TestHelpers.invoice(3, profile)
+
         invoice1 = saveInvoice(invoice1)
         invoice2 = saveInvoice(invoice2)
     }
@@ -60,16 +72,6 @@ class TaxCalculatorControllerTest extends Specification {
         return invoice
     }
 
-    private List<Invoice> getAllInvoices() {
-        def result = mockMvc.perform(get("/invoices"))
-                .andExpect(status().isOk())
-                .andReturn()
-                .response
-                .contentAsString
-
-        return jsonService.toObject(result, Invoice[])
-    }
-
     private TaxCalculatorResult taxCalculatorResult(Company company) {
         def result = mockMvc.perform(post("/tax")
                 .content(jsonService.toJson(company))
@@ -85,7 +87,7 @@ class TaxCalculatorControllerTest extends Specification {
 
     def "should returned zeros when company id is zero"() {
         when:
-        def taxCalculating = taxCalculatorResult(company(0))
+        def taxCalculating = taxCalculatorResult(company(0, ""))
 
         then:
         taxCalculating.income == 0
@@ -106,7 +108,7 @@ class TaxCalculatorControllerTest extends Specification {
 
     def "should returned all results when seller tax identifier is matching"() {
         when:
-        def taxCalculating = taxCalculatorResult(company(1))
+        def taxCalculating = taxCalculatorResult(company(1, ""))
 
         then:
         taxCalculating.income == 15000
@@ -127,7 +129,7 @@ class TaxCalculatorControllerTest extends Specification {
 
     def "should returned all results when buyer tax identifier is matching"() {
         when:
-        def taxCalculating = taxCalculatorResult(company(2))
+        def taxCalculating = taxCalculatorResult(company(2, ""))
 
         then:
         taxCalculating.income == 0
@@ -151,8 +153,8 @@ class TaxCalculatorControllerTest extends Specification {
         def invoice = Invoice.builder()
                 .id(UUID.randomUUID())
                 .dateAt(LocalDate.now())
-                .seller(company(5))
-                .buyer(company(6))
+                .seller(company(5, ""))
+                .buyer(company(6, ""))
                 .entries(List.of(
                         InvoiceEntry.builder()
                                 .price(BigDecimal.valueOf(1000))
@@ -190,14 +192,14 @@ class TaxCalculatorControllerTest extends Specification {
 
         def salesInvoice = Invoice.builder()
                 .seller(companyToTaxSettlement)
-                .buyer(company(1))
-                .entries(List.of(invoiceEntry(1)))
+                .buyer(company(1, ""))
+                .entries(List.of(invoiceEntry(1, "")))
                 .build()
 
         def purchaseInvoice = Invoice.builder()
-                .seller(company(2))
+                .seller(company(2, ""))
                 .buyer(companyToTaxSettlement)
-                .entries(List.of(invoiceEntry(2)))
+                .entries(List.of(invoiceEntry(2, "")))
                 .build()
 
         saveInvoice(salesInvoice)

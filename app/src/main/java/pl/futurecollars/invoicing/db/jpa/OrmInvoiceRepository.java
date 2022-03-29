@@ -17,6 +17,7 @@ public class OrmInvoiceRepository implements InvoiceRepository {
 
     @Override
     public Invoice save(Invoice invoice) {
+        invoice.updateRelations();
         return jpaInvoiceRepository.save(invoice);
     }
 
@@ -37,7 +38,7 @@ public class OrmInvoiceRepository implements InvoiceRepository {
     @Override
     public Invoice update(UUID id, Invoice updatedInvoice) {
         if (jpaInvoiceRepository.findById(id).isPresent()) {
-            updatedInvoice.setId(id);
+            updatedInvoice.updateRelations();
             return jpaInvoiceRepository.save(updatedInvoice);
         } else {
             throw new NoSuchElementException("Invoice with id: " + id + " doesn't exist.");

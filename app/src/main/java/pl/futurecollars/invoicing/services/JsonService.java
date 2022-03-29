@@ -7,7 +7,7 @@ import pl.futurecollars.invoicing.exceptions.FileSystemException;
 
 public class JsonService<T> {
 
-    private ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper;
 
     public JsonService() {
         objectMapper = new ObjectMapper();

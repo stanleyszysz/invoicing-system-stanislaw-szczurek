@@ -3,6 +3,7 @@ package pl.futurecollars.invoicing.controllers
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.core.env.Environment
 import org.springframework.http.MediaType
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
@@ -31,16 +32,29 @@ class InvoiceControllerStepwiseTest extends Specification {
     private JsonService jsonService
 
     @Autowired
+    Environment environment
+
+    @Autowired
     private InvoiceRepository invoiceRepository
 
-    private Invoice invoice1 = TestHelpers.invoice(1)
-    private Company seller2 = TestHelpers.company(7)
+    @Shared
+    private Invoice invoice1
+
+    @Shared
+    private Company seller2
 
     @Shared
     private UUID id
 
     def "empty array is returned when no invoices were saved"() {
         given:
+        def profile = ""
+        if (environment != null) {
+            profile = environment.getActiveProfiles()[0]
+        }
+
+        invoice1 = TestHelpers.invoice(1, profile)
+        seller2 = TestHelpers.company(7, profile)
         String expectedBody = "[]"
 
         when:

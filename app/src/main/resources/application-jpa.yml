@@ -5,6 +5,8 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQL94Dialect
+        show_sql: true
+        format_sql: true
   datasource:
     url: jdbc:postgresql://localhost:5432/invoicing
     username: postgres

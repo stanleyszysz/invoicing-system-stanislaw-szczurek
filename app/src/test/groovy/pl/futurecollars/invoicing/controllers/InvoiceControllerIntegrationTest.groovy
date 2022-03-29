@@ -3,6 +3,7 @@ package pl.futurecollars.invoicing.controllers
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.core.env.Environment
 import org.springframework.http.MediaType
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
@@ -29,16 +30,29 @@ class InvoiceControllerIntegrationTest extends Specification {
     private JsonService jsonService
 
     @Autowired
+    Environment environment
+
+    @Autowired
     private InvoiceRepository invoiceRepository
 
-    private Invoice invoice1 = TestHelpers.invoice(1)
-    private Invoice invoice2 = TestHelpers.invoice(3)
-    private Invoice invoice3 = TestHelpers.invoice(5)
-    private Company seller2 = TestHelpers.company(7)
+    private Invoice invoice1
+    private Invoice invoice2
+    private Invoice invoice3
+    private Company seller2
     private UUID id
 
     def setup() {
         invoiceRepository.clear()
+
+        def profile = ""
+        if (environment != null) {
+            profile = environment.getActiveProfiles()[0]
+        }
+
+        invoice1 = TestHelpers.invoice(1, profile)
+        invoice2 = TestHelpers.invoice(3, profile)
+        invoice3 = TestHelpers.invoice(5, profile)
+        seller2 = TestHelpers.company(7, profile)
     }
 
     private Invoice saveInvoice(invoice) {

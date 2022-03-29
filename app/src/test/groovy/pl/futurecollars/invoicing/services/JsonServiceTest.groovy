@@ -1,5 +1,6 @@
 package pl.futurecollars.invoicing.services
 
+
 import pl.futurecollars.invoicing.exceptions.FileSystemException
 import pl.futurecollars.invoicing.helpers.TestHelpers
 import pl.futurecollars.invoicing.model.Invoice
@@ -11,7 +12,7 @@ class JsonServiceTest extends Specification {
 
     def "should convert object to json and vice versa"() {
         given:
-        def invoice = TestHelpers.invoice(1)
+        def invoice = TestHelpers.invoice(1, "")
 
         when:
         def invoiceToString = jsonService.toJson(invoice)
@@ -20,7 +21,7 @@ class JsonServiceTest extends Specification {
         def invoiceFromJson = jsonService.toObject(invoiceToString, Invoice)
 
         then:
-        invoice == invoiceFromJson
+        Objects.deepEquals(invoice, invoiceFromJson)
     }
 
     def "should returned exception when creating object from empty string"() {

@@ -3,6 +3,7 @@ package pl.futurecollars.invoicing.services
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.core.env.Environment
 import org.springframework.test.context.ActiveProfiles
 import pl.futurecollars.invoicing.helpers.TestHelpers
 import pl.futurecollars.invoicing.model.Invoice
@@ -16,12 +17,24 @@ class InvoiceServiceTest extends Specification {
     @Autowired
     private InvoiceService invoiceService
 
-    private Invoice invoice1 = TestHelpers.invoice(1)
-    private Invoice invoice2 = TestHelpers.invoice(3)
-    private Invoice invoice3 = TestHelpers.invoice(5)
+    @Autowired
+    Environment environment
+
+    private Invoice invoice1
+    private Invoice invoice2
+    private Invoice invoice3
 
     def setup() {
         invoiceService.clear()
+
+        def profile = ""
+        if (environment != null) {
+            profile = environment.getActiveProfiles()[0]
+        }
+
+        invoice1 = TestHelpers.invoice(1, profile)
+        invoice2 = TestHelpers.invoice(3, profile)
+        invoice3 = TestHelpers.invoice(5, profile)
     }
 
     def "should save invoices to repository"() {

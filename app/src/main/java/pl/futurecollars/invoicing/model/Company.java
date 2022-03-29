@@ -1,5 +1,6 @@
 package pl.futurecollars.invoicing.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.math.BigDecimal;
 import java.util.UUID;
@@ -10,34 +11,34 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
 
+@Entity
 @Builder
 @Data
-@Entity
-@AllArgsConstructor
-@NoArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Company {
 
     @Id
-    @GeneratedValue(generator = "UUID")
-    @GenericGenerator(
-        name = "UUID",
-        strategy = "org.hibernate.id.UUIDGenerator")
-    @Column(name = "id", columnDefinition = "UUID", updatable = false, nullable = false)
+    @GeneratedValue(generator = "uuid2")
+    @GenericGenerator(name = "uuid2", strategy = "uuid2")
+    @Column(name = "companyId", length = 16, updatable = false, nullable = false)
     @Schema(description = "Company id", example = "3fa85f64-5717-4562-b3fc-2c963f66afa6", required = true)
-    private UUID id;
+    private UUID companyId;
     @Schema(description = "Tax Identification Number", example = "5252287009", required = true)
     private String taxIdentifier;
     @Schema(description = "Company Name", example = "Torte", required = true)
     private String name;
 
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "id")
+    @JoinColumn(name = "address_id")
+    @JsonManagedReference
     private Address address;
 
     @Builder.Default
@@ -47,6 +48,4 @@ public class Company {
     @Builder.Default
     @Schema(description = "Health insurance amount", example = "500.00", required = true)
     private BigDecimal healthInsurance = BigDecimal.ZERO;
-
-
 }

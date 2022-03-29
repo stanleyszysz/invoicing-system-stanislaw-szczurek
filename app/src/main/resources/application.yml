@@ -8,6 +8,8 @@ logging:
     org:
       springframework:
         boot: INFO
+      hibernate:
+        type: trace
     pl:
       futurecollars:
         invoicing: INFO

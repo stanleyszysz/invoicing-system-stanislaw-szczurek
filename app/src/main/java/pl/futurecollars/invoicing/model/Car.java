@@ -20,11 +20,9 @@ import org.hibernate.annotations.GenericGenerator;
 public class Car {
 
     @Id
-    @GeneratedValue(generator = "UUID")
-    @GenericGenerator(
-        name = "UUID",
-        strategy = "org.hibernate.id.UUIDGenerator")
-    @Column(name = "id", columnDefinition = "UUID", updatable = false, nullable = false)
+    @GeneratedValue(generator = "uuid2")
+    @GenericGenerator(name = "uuid2", strategy = "uuid2")
+    @Column(name = "id", length = 16, updatable = false, nullable = false)
     @Schema(description = "Car id", example = "3fa85f64-5717-4562-b3fc-2c963f66afa6", required = true)
     private UUID id;
     @Schema(description = "Car registration number", example = "DW 8G888", required = true)

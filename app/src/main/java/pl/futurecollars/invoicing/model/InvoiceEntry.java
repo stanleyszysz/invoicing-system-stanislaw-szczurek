@@ -1,6 +1,6 @@
 package pl.futurecollars.invoicing.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.math.BigDecimal;
 import java.util.UUID;
@@ -15,6 +15,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.hibernate.annotations.GenericGenerator;
 
 @Builder
@@ -25,11 +26,9 @@ import org.hibernate.annotations.GenericGenerator;
 public class InvoiceEntry {
 
     @Id
-    @GeneratedValue(generator = "UUID")
-    @GenericGenerator(
-        name = "UUID",
-        strategy = "org.hibernate.id.UUIDGenerator")
-    @Column(name = "id", columnDefinition = "UUID", updatable = false, nullable = false)
+    @GeneratedValue(generator = "uuid2")
+    @GenericGenerator(name = "uuid2", strategy = "uuid2")
+    @Column(name = "id", length = 16, updatable = false, nullable = false)
     @Schema(description = "Invoice entry id", example = "3fa85f64-5717-4562-b3fc-2c963f66afa6", required = true)
     private UUID id;
     @Schema(description = "Product name", example = "Shampoo", required = true)
@@ -38,7 +37,6 @@ public class InvoiceEntry {
     private BigDecimal price;
     @Schema(description = "Tax value of product", example = "23.00", required = true)
     private BigDecimal vatValue;
-    @Column(columnDefinition = "numeric(3, 2)")
     @Schema(description = "Tax rate", required = true)
     private Vat vatRate;
 
@@ -47,8 +45,9 @@ public class InvoiceEntry {
     @Schema(description = "Car related expense")
     private Car carRelatedExpense;
 
-    @ManyToOne(targetEntity = Invoice.class)
+    @ManyToOne
     @JoinColumn(name = "invoice_id", nullable = false)
-    @JsonIgnore
+    @JsonBackReference
+    @ToString.Exclude
     private Invoice invoice;
 }
