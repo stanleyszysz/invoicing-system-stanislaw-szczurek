@@ -23,11 +23,8 @@ public class OrmInvoiceRepository implements InvoiceRepository {
 
     @Override
     public Optional<Invoice> getById(UUID id) {
-        if (jpaInvoiceRepository.findById(id).isPresent()) {
-            return jpaInvoiceRepository.findById(id);
-        } else {
-            throw new NoSuchElementException("Invoice with id: " + id + " doesn't exist.");
-        }
+        return Optional.of(jpaInvoiceRepository.findById(id).orElseThrow(()
+                -> new NoSuchElementException("Invoice with id: " + id + " doesn't exist.")));
     }
 
     @Override

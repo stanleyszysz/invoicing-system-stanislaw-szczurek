@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -63,23 +62,5 @@ public class Invoice {
 
     public void generatedId() {
         this.id = UUID.randomUUID();
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        Invoice invoice = (Invoice) o;
-        return Objects.equals(id, invoice.id) && Objects.equals(dateAt, invoice.dateAt)
-            && Objects.equals(number, invoice.number);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, dateAt, number, seller, buyer, entries);
     }
 }

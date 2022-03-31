@@ -1,0 +1,21 @@
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQL94Dialect
+        show_sql: true
+        format_sql: true
+  datasource:
+    url: jdbc:postgresql://localhost:5432/invoicing
+    username: postgres
+    password: pass1234
+    driver-class-name: org.postgresql.Driver
+  flyway:
+    enabled: true
+
+pl:
+  futurecollars:
+    invoicing:
+      db: jpa
