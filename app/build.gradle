@@ -14,7 +14,7 @@ buildscript {
 }
 
 plugins {
-    id 'org.springframework.boot' version '2.6.3'
+    id 'org.springframework.boot' version '2.6.4'
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
     id 'java'
     id 'groovy'
@@ -51,6 +51,7 @@ dependencies {
 
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation "com.fasterxml.jackson.core:jackson-databind:${jaksonVersion}"
     implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:${jaksonVersion}"
     implementation "com.google.guava:guava:${guavaVersion}"
@@ -129,6 +130,11 @@ task testWithSQLDatabase(type: Test) {
     systemProperty 'spring.profiles.active', 'sql'
 }
 
+task testWithJpaDatabase(type: Test) {
+    systemProperty 'spring.profiles.active', 'jpa'
+}
+
 check.dependsOn testWithFileDatabase
 check.dependsOn testWithFileDatabase
-//check.dependsOn testWithSqlDatabase
+check.dependsOn testWithSQLDatabase
+check.dependsOn testWithJpaDatabase

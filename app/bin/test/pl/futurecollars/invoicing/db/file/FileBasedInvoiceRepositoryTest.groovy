@@ -1,16 +1,20 @@
-package pl.futurecollars.invoicing.db.memory
+package pl.futurecollars.invoicing.db.file
 
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
 import pl.futurecollars.invoicing.db.InvoiceRepository
 import pl.futurecollars.invoicing.db.InvoiceRepositoryTest
 
-@ActiveProfiles("memory")
+@ActiveProfiles("file")
 @SpringBootTest
-class InMemoryInvoiceRepositoryTest extends InvoiceRepositoryTest {
+class FileBasedInvoiceRepositoryTest extends InvoiceRepositoryTest {
+
+    @Autowired
+    FileBasedInvoiceRepository fileBasedInvoiceRepository
 
     @Override
     InvoiceRepository getRepositoryInstance() {
-        return new InMemoryInvoiceRepository()
+        return fileBasedInvoiceRepository
     }
 }

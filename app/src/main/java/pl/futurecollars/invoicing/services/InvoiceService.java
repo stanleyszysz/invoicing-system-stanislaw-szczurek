@@ -17,6 +17,7 @@ public class InvoiceService {
     }
 
     public Invoice save(Invoice invoice) {
+        invoice.updateRelations();
         return invoiceRepository.save(invoice);
     }
 
